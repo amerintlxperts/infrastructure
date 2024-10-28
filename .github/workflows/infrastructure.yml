@@ -1,0 +1,260 @@
+---
+name: "infrastructure"
+
+on: #  yamllint disable-line rule:truthy
+  workflow_dispatch:
+  push:
+    paths:
+      - "**.tf"
+      - "cloud-init/*"
+    branches:
+      - "main"
+
+permissions:
+  id-token: write
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  terraform:
+    name: Terraform Init
+    runs-on: ubuntu-latest
+    outputs:
+      action: ${{ steps.terraform.outputs.action }}
+    steps:
+      - id: terraform
+        name: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          env
+          if [[ -n "${{ secrets.DEPLOYED }}" ]]
+          then
+            if [[ "${{ secrets.DEPLOYED }}" == "true" ]]
+            then
+              echo 'action=apply' >> "${GITHUB_OUTPUT}"
+            else
+              echo 'action=destroy' >> "${GITHUB_OUTPUT}"
+            fi
+          else
+            echo 'action=skip' >> "${GITHUB_OUTPUT}"
+          fi
+
+  plan:
+    needs: [terraform]
+    if: needs.terraform.outputs.action == 'apply'
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    env:
+      ARM_SKIP_PROVIDER_REGISTRATION: true
+    outputs:
+      tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
+
+    steps:
+      - name: Github repository checkout
+        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
+
+      - name: Microsoft Azure Authentication
+        uses: azure/login@f83d0254638e35ef1165887ce2c56be3d11c3eb4
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Hashicorp Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd
+        with:
+          terraform_wrapper: false
+
+      - name: terraform init
+        id: init
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          TF_IN_AUTOMATION: true
+          TF_CLI_ARGS_init: -backend-config="storage_account_name=${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ secrets.TFSTATE_CONTAINER_NAME }}" -backend-config="resource_group_name=${{ secrets.AZURE_TFSTATE_RESOURCE_GROUP_NAME }}" -backend-config="key=${{ github.ref_name }}" -input=false
+        run: terraform init
+
+      - name: terraform plan
+        id: tf-plan
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          TF_VAR_PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
+          TF_VAR_LOCATION: ${{ secrets.LOCATION }}
+          TF_VAR_GITHUB_TOKEN: ${{ secrets.PAT }}
+          TF_VAR_DOCS_BUILDER_REPO_NAME: ${{ secrets.DOCS_BUILDER_REPO_NAME }}
+          TF_VAR_MANIFESTS_SSH_PRIVATE_KEY: ${{ secrets.MANIFESTS_SSH_PRIVATE_KEY }}
+          TF_VAR_MANIFESTS_REPO_NAME: ${{ secrets.MANIFESTS_REPO_NAME }}
+          TF_VAR_HUB_NVA_PASSWORD: ${{ secrets.HUB_NVA_PASSWORD }}
+          TF_VAR_HUB_NVA_USERNAME: ${{ secrets.HUB_NVA_USERNAME }}
+          TF_IN_AUTOMATION: true
+        run: |
+          export exitcode=0
+          terraform plan -detailed-exitcode -no-color -out tfplan || export exitcode=$?
+          echo "exitcode=$exitcode" >> "$GITHUB_OUTPUT"
+          if [ $exitcode -eq 1 ]; then
+            echo Terraform Plan Failed!
+            exit 1
+          else
+            exit 0
+          fi
+
+      - name: Publish Terraform Plan
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882
+        with:
+          name: tfplan
+          path: ./
+
+      - name: Create String Output
+        id: tf-plan-string
+        run: |
+          TERRAFORM_PLAN=$(terraform show -no-color tfplan)
+          delimiter="$(openssl rand -hex 8)"
+          {
+            echo "summary<<${delimiter}"
+            echo "## Terraform Plan Output"
+            echo "<details><summary>Click to expand</summary>"
+            echo ""
+            echo '```terraform'
+            echo "$TERRAFORM_PLAN"
+            echo '```'
+            echo "</details>"
+            echo "${delimiter}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Publish Terraform Plan to Task Summary
+        env:
+          SUMMARY: ${{ steps.tf-plan-string.outputs.summary }}
+        run: |
+          echo "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"
+
+      # - name: Push Terraform Output to PR
+      #   if: github.ref != 'refs/heads/main'
+      #   uses: actions/github-script@v6
+      #   env:
+      #     SUMMARY: "${{ steps.tf-plan-string.outputs.summary }}"
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     script: |
+      #       const body = `${process.env.SUMMARY}`;
+      #        github.rest.issues.createComment({
+      #          issue_number: context.issue.number,
+      #          owner: context.repo.owner,
+      #          repo: context.repo.repo,
+      #          body: body
+      #        })
+
+  apply:
+    name: Terraform Apply
+    if: needs.terraform.outputs.action == 'apply'
+    runs-on: ubuntu-latest
+    needs: [terraform, plan]
+    steps:
+      - name: Github repository checkout
+        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
+
+      - name: Microsoft Azure Authentication
+        uses: azure/login@f83d0254638e35ef1165887ce2c56be3d11c3eb4
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Hashicorp Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd
+        with:
+          terraform_wrapper: false
+
+      - name: terraform init
+        id: init
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          TF_IN_AUTOMATION: true
+          TF_CLI_ARGS_init: -backend-config="storage_account_name=${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ secrets.TFSTATE_CONTAINER_NAME }}" -backend-config="resource_group_name=${{ secrets.AZURE_TFSTATE_RESOURCE_GROUP_NAME }}" -backend-config="key=${{ github.ref_name }}" -input=false
+        run: terraform init
+
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
+        with:
+          name: tfplan
+          path: ./
+
+      - name: Terraform Apply
+        id: apply
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          TF_VAR_PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
+          TF_VAR_LOCATION: ${{ secrets.LOCATION }}
+          TF_VAR_GITHUB_TOKEN: ${{ secrets.PAT }}
+          TF_VAR_DOCS_BUILDER_REPO_NAME: ${{ secrets.DOCS_BUILDER_REPO_NAME }}
+          TF_VAR_MANIFESTS_REPO_NAME: ${{ secrets.MANIFESTS_REPO_NAME }}
+          TF_VAR_MANIFESTS_SSH_PRIVATE_KEY: ${{ secrets.MANIFESTS_SSH_PRIVATE_KEY }}
+          TF_VAR_HUB_NVA_PASSWORD: ${{ secrets.HUB_NVA_PASSWORD }}
+          TF_VAR_HUB_NVA_USERNAME: ${{ secrets.HUB_NVA_USERNAME }}
+          TF_IN_AUTOMATION: true
+        run: terraform apply -auto-approve tfplan
+
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.repository_owner }}/${{ secrets.DOCS_BUILDER_REPO_NAME }}
+          event-type: ${{ secrets.DOCS_BUILDER_REPO_NAME }}
+
+  destroy:
+    name: Terraform Destroy
+    needs: [terraform]
+    if: needs.terraform.outputs.action == 'destroy'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Github repository checkout
+        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
+
+      - name: Microsoft Azure Authentication
+        uses: azure/login@f83d0254638e35ef1165887ce2c56be3d11c3eb4
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Hashicorp Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd
+        with:
+          terraform_wrapper: false
+
+      - name: terraform init
+        id: init
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          TF_IN_AUTOMATION: true
+          TF_CLI_ARGS_init: -backend-config="storage_account_name=${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ secrets.TFSTATE_CONTAINER_NAME }}" -backend-config="resource_group_name=${{ secrets.AZURE_TFSTATE_RESOURCE_GROUP_NAME }}" -backend-config="key=${{ github.ref_name }}" -input=false
+        run: terraform init
+
+      - name: terraform destroy
+        id: destroy
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          TF_VAR_PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
+          TF_VAR_LOCATION: ${{ secrets.LOCATION }}
+          TF_VAR_GITHUB_TOKEN: ${{ secrets.PAT }}
+          TF_VAR_DOCS_BUILDER_REPO_NAME: ${{ secrets.DOCS_BUILDER_REPO_NAME }}
+          TF_VAR_MANIFESTS_REPO_NAME: ${{ secrets.MANIFESTS_REPO_NAME }}
+          TF_VAR_MANIFESTS_SSH_PRIVATE_KEY: ${{ secrets.MANIFESTS_SSH_PRIVATE_KEY }}
+          TF_VAR_HUB_NVA_PASSWORD: ${{ secrets.HUB_NVA_PASSWORD }}
+          TF_VAR_HUB_NVA_USERNAME: ${{ secrets.HUB_NVA_USERNAME }}
+          TF_IN_AUTOMATION: true
+        run: |
+          terraform destroy -auto-approve
