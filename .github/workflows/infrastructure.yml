@@ -87,6 +87,7 @@ jobs:
           TF_VAR_PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
           TF_VAR_LOCATION: ${{ secrets.LOCATION }}
           TF_VAR_GITHUB_TOKEN: ${{ secrets.PAT }}
+          TF_VAR_GITHUB_ORG: ${{ secrets.GITHUB_ORG }}
           TF_VAR_DOCS_BUILDER_REPO_NAME: ${{ secrets.DOCS_BUILDER_REPO_NAME }}
           TF_VAR_MANIFESTS_SSH_PRIVATE_KEY: ${{ secrets.MANIFESTS_SSH_PRIVATE_KEY }}
           TF_VAR_MANIFESTS_REPO_NAME: ${{ secrets.MANIFESTS_REPO_NAME }}
@@ -195,6 +196,7 @@ jobs:
           TF_VAR_PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
           TF_VAR_LOCATION: ${{ secrets.LOCATION }}
           TF_VAR_GITHUB_TOKEN: ${{ secrets.PAT }}
+          TF_VAR_GITHUB_ORG: ${{ secrets.GITHUB_ORG }}
           TF_VAR_DOCS_BUILDER_REPO_NAME: ${{ secrets.DOCS_BUILDER_REPO_NAME }}
           TF_VAR_MANIFESTS_REPO_NAME: ${{ secrets.MANIFESTS_REPO_NAME }}
           TF_VAR_MANIFESTS_SSH_PRIVATE_KEY: ${{ secrets.MANIFESTS_SSH_PRIVATE_KEY }}
@@ -250,6 +252,7 @@ jobs:
           TF_VAR_PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
           TF_VAR_LOCATION: ${{ secrets.LOCATION }}
           TF_VAR_GITHUB_TOKEN: ${{ secrets.PAT }}
+          TF_VAR_GITHUB_ORG: ${{ secrets.GITHUB_ORG }}
           TF_VAR_DOCS_BUILDER_REPO_NAME: ${{ secrets.DOCS_BUILDER_REPO_NAME }}
           TF_VAR_MANIFESTS_REPO_NAME: ${{ secrets.MANIFESTS_REPO_NAME }}
           TF_VAR_MANIFESTS_SSH_PRIVATE_KEY: ${{ secrets.MANIFESTS_SSH_PRIVATE_KEY }}
