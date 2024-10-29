@@ -65,6 +65,7 @@ provider "tls" {}
 provider "http" {}
 provider "local" {}
 provider "github" {
+  owner = var.GITHUB_ORG
   token = var.GITHUB_TOKEN
 }
 provider "kubernetes" {

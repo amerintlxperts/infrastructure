@@ -31,6 +31,10 @@ variable "GITHUB_TOKEN" {
   description = "GitHub token for authenticating to the repository"
 }
 
+variable "GITHUB_ORG" {
+  type = string
+}
+
 variable "MANIFESTS_SSH_PRIVATE_KEY" {
   type        = string
   description = "GitHub deploy-key for authenticating to the repository"
