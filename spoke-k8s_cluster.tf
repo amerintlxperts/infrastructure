@@ -75,9 +75,14 @@ resource "azurerm_role_assignment" "acr_role_assignment" {
   skip_service_principal_aad_check = true
 }
 
+locals {
+  cluster_name = substr("spoke_kubernetes_cluster_${var.PROJECT_NAME}_${var.LOCATION}", 0, 63)
+  node_resource_group = substr("${azurerm_resource_group.azure_resource_group.name}_kubernetes-cluster_${var.LOCATION}_MC", 0, 80)
+}
+
 resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   depends_on          = [azurerm_virtual_network_peering.spoke-to-hub_virtual_network_peering, azurerm_linux_virtual_machine.hub-nva_virtual_machine]
-  name                = "spoke_kubernetes_cluster_${var.PROJECT_NAME}_${var.LOCATION}"
+  name                = local.cluster_name
   location            = azurerm_resource_group.azure_resource_group.location
   resource_group_name = azurerm_resource_group.azure_resource_group.name
   dns_prefix          = azurerm_resource_group.azure_resource_group.name
@@ -89,7 +94,7 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   cost_analysis_enabled             = true
   support_plan                      = "KubernetesOfficial"
   kubernetes_version                = "1.30"
-  node_resource_group               = "${azurerm_resource_group.azure_resource_group.name}_kubernetes-cluster_${var.LOCATION}_MC"
+  node_resource_group = local.node_resource_group
   role_based_access_control_enabled = true
   oidc_issuer_enabled               = true
   workload_identity_enabled         = true
