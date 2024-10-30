@@ -77,7 +77,7 @@ resource "azurerm_role_assignment" "acr_role_assignment" {
 
 resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   depends_on          = [azurerm_virtual_network_peering.spoke-to-hub_virtual_network_peering, azurerm_linux_virtual_machine.hub-nva_virtual_machine]
-  name                = "spoke_kubernetes_cluster"
+  name                = "spoke_kubernetes_cluster_${var.PROJECT_NAME}_${var.LOCATION}"
   location            = azurerm_resource_group.azure_resource_group.location
   resource_group_name = azurerm_resource_group.azure_resource_group.name
   dns_prefix          = azurerm_resource_group.azure_resource_group.name
