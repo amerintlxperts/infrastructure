@@ -76,8 +76,8 @@ resource "azurerm_role_assignment" "acr_role_assignment" {
 }
 
 locals {
-  cluster_name        = substr("spoke_kubernetes_cluster_${var.PROJECT_NAME}_${var.LOCATION}", 0, 63)
-  node_resource_group = substr("${azurerm_resource_group.azure_resource_group.name}_kubernetes-cluster_${var.LOCATION}_MC", 0, 80)
+  cluster_name        = substr("${azurerm_resource_group.azure_resource_group.name}_k8s-cluster_${var.LOCATION}", 0, 63)
+  node_resource_group = substr("${azurerm_resource_group.azure_resource_group.name}_k8s-cluster_${var.LOCATION}_MC", 0, 80)
 }
 
 resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
