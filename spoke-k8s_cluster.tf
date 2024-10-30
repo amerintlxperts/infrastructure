@@ -76,7 +76,7 @@ resource "azurerm_role_assignment" "acr_role_assignment" {
 }
 
 locals {
-  cluster_name = substr("spoke_kubernetes_cluster_${var.PROJECT_NAME}_${var.LOCATION}", 0, 63)
+  cluster_name        = substr("spoke_kubernetes_cluster_${var.PROJECT_NAME}_${var.LOCATION}", 0, 63)
   node_resource_group = substr("${azurerm_resource_group.azure_resource_group.name}_kubernetes-cluster_${var.LOCATION}_MC", 0, 80)
 }
 
@@ -94,7 +94,7 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   cost_analysis_enabled             = true
   support_plan                      = "KubernetesOfficial"
   kubernetes_version                = "1.30"
-  node_resource_group = local.node_resource_group
+  node_resource_group               = local.node_resource_group
   role_based_access_control_enabled = true
   oidc_issuer_enabled               = true
   workload_identity_enabled         = true
