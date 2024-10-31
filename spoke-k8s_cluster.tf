@@ -235,6 +235,29 @@ resource "kubernetes_secret" "fortiweb_login_secret" {
   type = "Opaque"
 }
 
+resource "kubernetes_namespace" "lacework" {
+  depends_on = [
+    azurerm_kubernetes_cluster.kubernetes_cluster
+  ]
+  metadata {
+    name = "lacework"
+    labels = {
+      name = "lacework"
+    }
+  }
+}
+
+resource "kubernetes_secret" "lacework_agent_token" {
+  metadata {
+    name      = "lacework_agent_token"
+    namespace = kubernetes_namespace.lacework.metadata[0].name
+  }
+  data = {
+    token = var.LW_AGENT_TOKEN
+  }
+  type = "Opaque"
+}
+
 locals {
   repo_fqdn = "git@github.com:${var.MANIFESTS_REPO_NAME}.git"
 }
