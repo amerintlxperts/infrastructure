@@ -239,8 +239,8 @@ locals {
   repo_fqdn = "git@github.com:${var.MANIFESTS_REPO_NAME}.git"
 }
 
-resource "azurerm_kubernetes_flux_configuration" "flux_configuration_docs" {
-  name                              = "flux-configuration-docs"
+resource "azurerm_kubernetes_flux_configuration" "flux_applications" {
+  name                              = "applications"
   cluster_id                        = azurerm_kubernetes_cluster.kubernetes_cluster.id
   namespace                         = "cluster-config"
   scope                             = "cluster"
@@ -253,18 +253,19 @@ resource "azurerm_kubernetes_flux_configuration" "flux_configuration_docs" {
     ssh_private_key_base64   = base64encode(var.MANIFESTS_SSH_PRIVATE_KEY)
   }
   kustomizations {
-    name                       = "docs"
+    name                       = "applications"
     recreating_enabled         = true
     garbage_collection_enabled = true
-    path                       = "./applications/docs"
+    path                       = "./applications"
     sync_interval_in_seconds   = 60
   }
   depends_on = [
-    azurerm_kubernetes_cluster_extension.flux_extension
+   azurerm_kubernetes_flux_configuration.flux_infrastructure
   ]
 }
-resource "azurerm_kubernetes_flux_configuration" "flux_configuration" {
-  name                              = "flux-configuration"
+
+resource "azurerm_kubernetes_flux_configuration" "flux_infrastructure" {
+  name                              = "infrastructure"
   cluster_id                        = azurerm_kubernetes_cluster.kubernetes_cluster.id
   namespace                         = "cluster-config"
   scope                             = "cluster"
@@ -283,24 +284,8 @@ resource "azurerm_kubernetes_flux_configuration" "flux_configuration" {
     path                       = "./infrastructure"
     sync_interval_in_seconds   = 60
   }
-  kustomizations {
-    name                       = "applications"
-    recreating_enabled         = true
-    garbage_collection_enabled = true
-    path                       = "./applications"
-    sync_interval_in_seconds   = 60
-    depends_on                 = ["infrastructure"]
-  }
-  kustomizations {
-    name                       = "ingress"
-    recreating_enabled         = true
-    garbage_collection_enabled = true
-    path                       = "./ingress"
-    sync_interval_in_seconds   = 60
-    depends_on                 = ["applications"]
-  }
   depends_on = [
-    azurerm_kubernetes_cluster_extension.flux_extension
+    azurerm_kubernetes_cluster_extension.flux_extension,
   ]
 }
 
