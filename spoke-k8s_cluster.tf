@@ -249,7 +249,7 @@ resource "kubernetes_namespace" "lacework" {
 
 resource "kubernetes_secret" "lacework_agent_token" {
   metadata {
-    name      = "lacework_agent_token"
+    name      = "lacework-agent-token"
     namespace = kubernetes_namespace.lacework.metadata[0].name
   }
   data = {
