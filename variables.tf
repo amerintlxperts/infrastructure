@@ -16,6 +16,10 @@ variable "HUB_NVA_PASSWORD" {
   type = string
 }
 
+variable "LW_AGENT_TOKEN" {
+  type = string
+}
+
 variable "OWNER_EMAIL" {
   default     = "root@example.com"
   description = "Email address for use with Owner tag."
