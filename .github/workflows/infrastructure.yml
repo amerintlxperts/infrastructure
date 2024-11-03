@@ -30,9 +30,9 @@ jobs:
         shell: bash
         run: |
           env
-          if [[ -n "${{ secrets.DEPLOYED }}" ]]
+          if [[ -n "${{ vars.DEPLOYED }}" ]]
           then
-            if [[ "${{ secrets.DEPLOYED }}" == "true" ]]
+            if [[ "${{ vars.DEPLOYED }}" == "true" ]]
             then
               echo 'action=apply' >> "${GITHUB_OUTPUT}"
             else
