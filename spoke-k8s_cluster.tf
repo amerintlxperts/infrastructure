@@ -110,8 +110,8 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   default_node_pool {
     temporary_name_for_rotation = "rotation"
     name                        = "system"
-    node_count                  = var.environment == "production" ? 3 : 1
-    vm_size                     = var.environment == "production" ? local.vm-image["aks"].size : local.vm-image["aks"].size-dev
+    node_count                  = var.ENVIRONMENT_GRADE == "Production" ? 3 : 1
+    vm_size                     = var.ENVIRONMENT_GRADE == "Production" ? local.vm-image["aks"].size : local.vm-image["aks"].size-dev
     os_sku                      = "AzureLinux"
     max_pods                    = "75"
     orchestrator_version        = "1.30"
@@ -139,11 +139,11 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "node-pool" {
-  count                 = var.spoke-k8s-node-pool-gpu ? 1 : 0
+  count                 = var.GPU_NODE_POOL ? 1 : 0
   name                  = "gpu"
   mode                  = "User"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.kubernetes_cluster.id
-  vm_size               = local.vm-image["aks"].gpu-size
+  vm_size               = var.ENVIRONMENT_GRADE == "Production" ? local.vm-image["aks"].gpu-size ; local.vm-image["aks"].gpu-size-dev
   node_count            = 1
   os_sku                = "AzureLinux"
   node_taints           = ["nvidia.com/gpu=true:NoSchedule"]

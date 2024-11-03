@@ -48,7 +48,7 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
   location                        = azurerm_resource_group.azure_resource_group.location
   resource_group_name             = azurerm_resource_group.azure_resource_group.name
   network_interface_ids           = [azurerm_network_interface.hub-nva-external_network_interface.id, azurerm_network_interface.hub-nva-internal_network_interface.id]
-  size                            = local.vm-image[var.hub-nva-image].size
+  size                            = var.ENVIRONMENT_GRADE == "Production" ? local.vm-image[var.hub-nva-image].size : local.vm-image[var.hub-nva-image].size-dev
   allow_extension_operations      = false
 
   identity {

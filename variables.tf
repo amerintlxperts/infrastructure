@@ -2,10 +2,10 @@ variable "PROJECT_NAME" {
   type = string
 }
 
-variable "environment" {
-  description = "The environment for deployment (e.g., production, staging, development)"
+variable "ENVIRONMENT_GRADE" {
+  description = "The environment for deployment (e.g., Production, Development)"
   type        = string
-  default     = "production"
+  default     = "Production"
 }
 
 variable "HUB_NVA_USERNAME" {
@@ -266,7 +266,7 @@ variable "spoke-aks-node-image" {
   type        = string
 }
 
-variable "spoke-k8s-node-pool-gpu" {
+variable "GPU_NODE_POOL" {
   default     = false
   description = "Set to true to enable GPU workloads"
   type        = bool
