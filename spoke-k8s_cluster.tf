@@ -142,11 +142,12 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
 resource "azurerm_kubernetes_cluster_node_pool" "node-pool" {
   count                 = var.GPU_NODE_POOL ? 1 : 0
   name                  = "gpu"
-  mode                  = "User"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.kubernetes_cluster.id
   vm_size               = var.ENVIRONMENT_GRADE == "Production" ? local.vm-image["aks"].gpu-size : local.vm-image["aks"].gpu-size-dev
   node_count            = 1
   os_sku                = "AzureLinux"
+  auto_scaling_enabled  = var.ENVIRONMENT_GRADE == "Production" ? true : false
+  node_count            = 1
   node_taints           = ["nvidia.com/gpu=true:NoSchedule"]
   node_labels = {
     "nvidia.com/gpu.present" = "true"
