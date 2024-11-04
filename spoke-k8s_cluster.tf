@@ -147,7 +147,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "node-pool" {
   os_sku                = "AzureLinux"
   auto_scaling_enabled  = var.ENVIRONMENT_GRADE == "Production" ? true : false
   node_count            = 1
-  node_taints           = ["nvidia.com/gpu=true:NoSchedule"] # ["sku=gpu:NoSchedule"]
+  node_taints           = ["nvidia.com/gpu=true:NoSchedule"]
   node_labels = {
     "nvidia.com/gpu.present" = "true"
   }
