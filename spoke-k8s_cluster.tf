@@ -269,11 +269,11 @@ resource "kubernetes_secret" "lacework_agent_token" {
 }
 
 locals {
-  applications_repo_fqdn = "git@github.com:${var.APPLICATIONS_MANIFESTS_REPO_NAME}.git"
+  manifests_applications_repo_fqdn = "git@github.com:${var.MANIFESTS_APPLICATIONS_REPO_NAME}.git"
 }
 
 locals {
-  infrastructure_repo_fqdn = "git@github.com:${var.INFRASTRUCTURE_MANIFESTS_REPO_NAME}.git"
+  manifests_infrastructure_repo_fqdn = "git@github.com:${var.MANIFESTS_INFRASTRUCTURE_REPO_NAME}.git"
 }
 
 resource "azurerm_kubernetes_flux_configuration" "docs" {
@@ -283,11 +283,11 @@ resource "azurerm_kubernetes_flux_configuration" "docs" {
   scope                             = "cluster"
   continuous_reconciliation_enabled = true
   git_repository {
-    url                      = local.applications_repo_fqdn
+    url                      = local.manifests_applications_repo_fqdn
     reference_type           = "branch"
     reference_value          = "docs-version"
     sync_interval_in_seconds = 60
-    ssh_private_key_base64   = base64encode(var.APPLICATIONS_MANIFESTS_SSH_PRIVATE_KEY)
+    ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
   }
   kustomizations {
     name                       = "docs"
@@ -308,11 +308,11 @@ resource "azurerm_kubernetes_flux_configuration" "ingress" {
   scope                             = "cluster"
   continuous_reconciliation_enabled = true
   git_repository {
-    url                      = local.applications_repo_fqdn
+    url                      = local.manifests_applications_repo_fqdn
     reference_type           = "branch"
     reference_value          = "main"
     sync_interval_in_seconds = 60
-    ssh_private_key_base64   = base64encode(var.APPLICATIONS_MANIFESTS_SSH_PRIVATE_KEY)
+    ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
   }
   kustomizations {
     name                       = "ingress"
@@ -337,11 +337,11 @@ resource "azurerm_kubernetes_flux_configuration" "video" {
   scope                             = "cluster"
   continuous_reconciliation_enabled = true
   git_repository {
-    url                      = local.applications_repo_fqdn
+    url                      = local.manifests_applications_repo_fqdn
     reference_type           = "branch"
     reference_value          = "main"
     sync_interval_in_seconds = 60
-    ssh_private_key_base64   = base64encode(var.APPLICATIONS_MANIFESTS_SSH_PRIVATE_KEY)
+    ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
   }
   kustomizations {
     name                       = "video"
@@ -362,11 +362,11 @@ resource "azurerm_kubernetes_flux_configuration" "ollama" {
   scope                             = "cluster"
   continuous_reconciliation_enabled = true
   git_repository {
-    url                      = local.applications_repo_fqdn
+    url                      = local.manifests_applications_repo_fqdn
     reference_type           = "branch"
     reference_value          = "main"
     sync_interval_in_seconds = 60
-    ssh_private_key_base64   = base64encode(var.APPLICATIONS_MANIFESTS_SSH_PRIVATE_KEY)
+    ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
   }
   kustomizations {
     name                       = "ollama"
@@ -387,11 +387,11 @@ resource "azurerm_kubernetes_flux_configuration" "dvwa" {
   scope                             = "cluster"
   continuous_reconciliation_enabled = true
   git_repository {
-    url                      = local.applications_repo_fqdn
+    url                      = local.manifests_applications_repo_fqdn
     reference_type           = "branch"
     reference_value          = "main"
     sync_interval_in_seconds = 60
-    ssh_private_key_base64   = base64encode(var.APPLICATIONS_MANIFESTS_SSH_PRIVATE_KEY)
+    ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
   }
   kustomizations {
     name                       = "dvwa"
@@ -412,11 +412,11 @@ resource "azurerm_kubernetes_flux_configuration" "infrastructure" {
   scope                             = "cluster"
   continuous_reconciliation_enabled = true
   git_repository {
-    url                      = local.infrastructure_repo_fqdn
+    url                      = local.manifests_infrastructure_repo_fqdn
     reference_type           = "branch"
     reference_value          = "main"
     sync_interval_in_seconds = 60
-    ssh_private_key_base64   = base64encode(var.INFRASTRUCTURE_MANIFESTS_SSH_PRIVATE_KEY)
+    ssh_private_key_base64   = base64encode(var.MANIFESTS_INFRASTRUCTURE_SSH_PRIVATE_KEY)
   }
   kustomizations {
     name                       = "infrastructure"
