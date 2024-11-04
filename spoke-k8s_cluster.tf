@@ -372,7 +372,7 @@ resource "azurerm_kubernetes_flux_configuration" "ollama" {
     name                       = "ollama"
     recreating_enabled         = true
     garbage_collection_enabled = true
-    path                       = "./ollama"
+    path                       = var.GPU_NODE_POOL ? "./ollama-gpu" : "./ollama-cpu"
     sync_interval_in_seconds   = 60
   }
   depends_on = [
