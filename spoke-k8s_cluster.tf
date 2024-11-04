@@ -152,7 +152,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "node-pool" {
   }
   os_disk_type      = "Ephemeral"
   ultra_ssd_enabled = true
-  os_disk_size_gb   = var.ENVIRONMENT_GRADE == "Production" ? : "256" : "175"
+  os_disk_size_gb   = var.ENVIRONMENT_GRADE == "Production" ? "256" : "175"
   max_pods          = "50"
   zones             = ["1"]
   vnet_subnet_id    = azurerm_subnet.spoke_subnet.id
