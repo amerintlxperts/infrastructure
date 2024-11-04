@@ -39,16 +39,25 @@ variable "GITHUB_ORG" {
   type = string
 }
 
-variable "MANIFESTS_SSH_PRIVATE_KEY" {
+variable "MANIFESTS_INFRASTRUCTURE_SSH_PRIVATE_KEY" {
   type        = string
   description = "GitHub deploy-key for authenticating to the repository"
 }
 
-variable "DOCS_BUILDER_REPO_NAME" {
+variable "MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY" {
+  type        = string
+  description = "GitHub deploy-key for authenticating to the repository"
+}
+
+variable "MANIFESTS_INFRASTRUCTURE_REPO_NAME" {
   type = string
 }
 
-variable "MANIFESTS_REPO_NAME" {
+variable "MANIFESTS_APPLICATIONS_REPO_NAME" {
+  type = string
+}
+
+variable "DOCS_BUILDER_REPO_NAME" {
   type = string
 }
 
