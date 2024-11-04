@@ -295,12 +295,6 @@ resource "azurerm_kubernetes_flux_configuration" "ingress" {
     garbage_collection_enabled = true
     path                       = "./ingress"
     sync_interval_in_seconds   = 60
-    depends_on = [
-      "docs",
-      "video",
-      "ollama",
-      "dvwa"
-    ]
   }
   depends_on = [
     azurerm_kubernetes_flux_configuration.docs,
@@ -329,9 +323,6 @@ resource "azurerm_kubernetes_flux_configuration" "docs" {
     garbage_collection_enabled = true
     path                       = "./docs"
     sync_interval_in_seconds   = 60
-    depends_on = [
-      "infastructure"
-    ]
   }
   depends_on = [
     azurerm_kubernetes_flux_configuration.infrastructure
@@ -357,9 +348,6 @@ resource "azurerm_kubernetes_flux_configuration" "video" {
     garbage_collection_enabled = true
     path                       = "./video"
     sync_interval_in_seconds   = 60
-    depends_on = [
-      "infastructure"
-    ]
   }
   depends_on = [
     azurerm_kubernetes_flux_configuration.infrastructure
@@ -385,9 +373,6 @@ resource "azurerm_kubernetes_flux_configuration" "ollama" {
     garbage_collection_enabled = true
     path                       = var.GPU_NODE_POOL ? "./ollama-gpu" : "./ollama-cpu"
     sync_interval_in_seconds   = 60
-    depends_on = [
-      "infastructure"
-    ]
   }
   depends_on = [
     azurerm_kubernetes_flux_configuration.infrastructure
@@ -413,9 +398,6 @@ resource "azurerm_kubernetes_flux_configuration" "dvwa" {
     garbage_collection_enabled = true
     path                       = "./dvwa"
     sync_interval_in_seconds   = 60
-    depends_on = [
-      "infastructure"
-    ]
   }
   depends_on = [
     azurerm_kubernetes_flux_configuration.infrastructure
