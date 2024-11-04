@@ -144,7 +144,6 @@ resource "azurerm_kubernetes_cluster_node_pool" "node-pool" {
   name                  = "gpu"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.kubernetes_cluster.id
   vm_size               = var.ENVIRONMENT_GRADE == "Production" ? local.vm-image["aks"].gpu-size : local.vm-image["aks"].gpu-size-dev
-  node_count            = 1
   os_sku                = "AzureLinux"
   auto_scaling_enabled  = var.ENVIRONMENT_GRADE == "Production" ? true : false
   node_count            = 1
