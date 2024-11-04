@@ -2,10 +2,10 @@ variable "PROJECT_NAME" {
   type = string
 }
 
-variable "environment" {
-  description = "The environment for deployment (e.g., production, staging, development)"
+variable "ENVIRONMENT_GRADE" {
+  description = "The environment for deployment (e.g., Production, Development)"
   type        = string
-  default     = "production"
+  default     = "Production"
 }
 
 variable "HUB_NVA_USERNAME" {
@@ -39,16 +39,25 @@ variable "GITHUB_ORG" {
   type = string
 }
 
-variable "MANIFESTS_SSH_PRIVATE_KEY" {
+variable "MANIFESTS_INFRASTRUCTURE_SSH_PRIVATE_KEY" {
   type        = string
   description = "GitHub deploy-key for authenticating to the repository"
 }
 
-variable "DOCS_BUILDER_REPO_NAME" {
+variable "MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY" {
+  type        = string
+  description = "GitHub deploy-key for authenticating to the repository"
+}
+
+variable "MANIFESTS_INFRASTRUCTURE_REPO_NAME" {
   type = string
 }
 
-variable "MANIFESTS_REPO_NAME" {
+variable "MANIFESTS_APPLICATIONS_REPO_NAME" {
+  type = string
+}
+
+variable "DOCS_BUILDER_REPO_NAME" {
   type = string
 }
 
@@ -266,7 +275,7 @@ variable "spoke-aks-node-image" {
   type        = string
 }
 
-variable "spoke-k8s-node-pool-gpu" {
+variable "GPU_NODE_POOL" {
   default     = false
   description = "Set to true to enable GPU workloads"
   type        = bool
