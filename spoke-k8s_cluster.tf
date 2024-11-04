@@ -303,9 +303,9 @@ resource "azurerm_kubernetes_flux_configuration" "ingress" {
     ]
   }
   depends_on = [
-    azurerm_kubernetes_flux_configuration.docs
-    azurerm_kubernetes_flux_configuration.ollama
-    azurerm_kubernetes_flux_configuration.video
+    azurerm_kubernetes_flux_configuration.docs,
+    azurerm_kubernetes_flux_configuration.ollama,
+    azurerm_kubernetes_flux_configuration.video,
     azurerm_kubernetes_flux_configuration.dvwa
   ]
 }
