@@ -259,7 +259,7 @@ resource "kubernetes_secret" "lacework_agent_token" {
       },
       serverurl = "https://api.lacework.net",
       tags = {
-        Env              = "k8s",
+        Env               = "k8s",
         KubernetesCluster = azurerm_kubernetes_cluster.kubernetes_cluster.name
       }
     }),
@@ -292,7 +292,7 @@ resource "azurerm_kubernetes_flux_configuration" "flux_applications" {
     sync_interval_in_seconds   = 60
   }
   depends_on = [
-   azurerm_kubernetes_flux_configuration.flux_infrastructure
+    azurerm_kubernetes_flux_configuration.flux_infrastructure
   ]
 }
 
