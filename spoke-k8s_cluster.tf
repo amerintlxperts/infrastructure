@@ -297,7 +297,7 @@ resource "azurerm_kubernetes_flux_configuration" "docs" {
     sync_interval_in_seconds   = 60
   }
   depends_on = [
-    azurerm_kubernetes_flux_configuration.flux_infrastructure
+    azurerm_kubernetes_flux_configuration.infrastructure
   ]
 }
 
