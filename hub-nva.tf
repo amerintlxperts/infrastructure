@@ -18,6 +18,13 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
     subnet_id                     = azurerm_subnet.hub-external_subnet.id
     public_ip_address_id          = azurerm_public_ip.hub-nva-vip_public_ip.id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
   }
+  ip_configuration {
+    name                          = "hub-nva-external-vip-ai_configuration"
+    private_ip_address_allocation = "Static"
+    private_ip_address            = var.hub-nva-ai-vip
+    subnet_id                     = azurerm_subnet.hub-external_subnet.id
+    public_ip_address_id          = azurerm_public_ip.hub-nva-vip_public_ai_ip.id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
+  }
 }
 
 resource "azurerm_network_interface" "hub-nva-internal_network_interface" {
@@ -81,6 +88,7 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
         VAR-spoke-virtual-network_netmask        = cidrnetmask(var.spoke-virtual-network_address_prefix)
         VAR-spoke-aks-node-ip                    = var.spoke-aks-node-ip
         VAR-hub-nva-vip                          = var.hub-nva-vip
+        VAR-hub-nva-ai-vip                          = var.hub-nva-ai-vip
         VAR-HUB_NVA_USERNAME                     = var.HUB_NVA_USERNAME
         VAR-CERTIFICATE                          = tls_self_signed_cert.self_signed_cert.cert_pem
         VAR-PRIVATEKEY                           = tls_private_key.private_key.private_key_pem
