@@ -264,7 +264,7 @@ variable "hub-nva-ai-vip" {
   description = "Hub NVA Gateway Virtual IP Address for AI"
   type        = string
   validation {
-    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-vip))
+    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-ai-vip))
     error_message = "The IP address must be a valid IPv4 format (e.g., 10.0.0.6)."
   }
 }
