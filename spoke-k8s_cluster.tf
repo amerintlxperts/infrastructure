@@ -276,34 +276,6 @@ locals {
   manifests_infrastructure_repo_fqdn = "git@github.com:${var.MANIFESTS_INFRASTRUCTURE_REPO_NAME}.git"
 }
 
-resource "azurerm_kubernetes_flux_configuration" "ingress" {
-  name                              = "ingress"
-  cluster_id                        = azurerm_kubernetes_cluster.kubernetes_cluster.id
-  namespace                         = "cluster-config"
-  scope                             = "cluster"
-  continuous_reconciliation_enabled = true
-  git_repository {
-    url                      = local.manifests_applications_repo_fqdn
-    reference_type           = "branch"
-    reference_value          = "main"
-    sync_interval_in_seconds = 60
-    ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
-  }
-  kustomizations {
-    name                       = "ingress"
-    recreating_enabled         = true
-    garbage_collection_enabled = true
-    path                       = "./ingress"
-    sync_interval_in_seconds   = 60
-  }
-  depends_on = [
-    azurerm_kubernetes_flux_configuration.docs,
-    azurerm_kubernetes_flux_configuration.ollama,
-    azurerm_kubernetes_flux_configuration.video,
-    azurerm_kubernetes_flux_configuration.dvwa
-  ]
-}
-
 resource "azurerm_kubernetes_flux_configuration" "docs" {
   name                              = "docs"
   cluster_id                        = azurerm_kubernetes_cluster.kubernetes_cluster.id
