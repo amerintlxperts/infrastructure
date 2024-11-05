@@ -259,6 +259,16 @@ variable "hub-nva-vip" {
   }
 }
 
+variable "hub-nva-ai-vip" {
+  default     = "10.0.0.6"
+  description = "Hub NVA Gateway Virtual IP Address for AI"
+  type        = string
+  validation {
+    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-vip))
+    error_message = "The IP address must be a valid IPv4 format (e.g., 10.0.0.6)."
+  }
+}
+
 variable "hub-nva-management-action" {
   default     = "Allow"
   description = "Allow or Deny access to Management"

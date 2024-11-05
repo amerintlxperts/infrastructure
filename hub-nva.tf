@@ -18,6 +18,13 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
     subnet_id                     = azurerm_subnet.hub-external_subnet.id
     public_ip_address_id          = azurerm_public_ip.hub-nva-vip_public_ip.id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
   }
+  ip_configuration {
+    name                          = "hub-nva-external-vip-ai_configuration"
+    private_ip_address_allocation = "Static"
+    private_ip_address            = var.hub-nva-ai-vip
+    subnet_id                     = azurerm_subnet.hub-external_subnet.id
+    public_ip_address_id          = azurerm_public_ip.hub-nva-vip_public_ai_ip.id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
+  }
 }
 
 resource "azurerm_network_interface" "hub-nva-internal_network_interface" {

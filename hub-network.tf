@@ -140,6 +140,15 @@ resource "azurerm_public_ip" "hub-nva-management_public_ip" {
   domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-management"
 }
 
+resource "azurerm_public_ip" "hub-nva-vip_public_ai_ip" {
+  name                = "hub-nva-vip_public_ai_ip"
+  location            = azurerm_resource_group.azure_resource_group.location
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-ai"
+}
+
 resource "azurerm_public_ip" "hub-nva-vip_public_ip" {
   name                = "hub-nva-vip_public_ip"
   location            = azurerm_resource_group.azure_resource_group.location
