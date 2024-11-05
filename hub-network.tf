@@ -76,6 +76,17 @@ resource "azurerm_network_security_group" "hub-external_network_security_group" 
     source_address_prefix      = "*"
     destination_address_prefix = var.hub-nva-vip
   }
+  security_rule {
+    name                       = "VIP_ai_rule"
+    priority                   = 102
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_ranges    = ["80", "443"] #checkov:skip=CKV_AZURE_160: Allow HTTP redirects
+    source_address_prefix      = "*"
+    destination_address_prefix = var.hub-nva-ai-vip
+  }
 }
 
 resource "azurerm_subnet_network_security_group_association" "hub-external-subnet-network-security-group_association" {
@@ -119,7 +130,7 @@ resource "azurerm_network_security_group" "hub-internal_network_security_group" 
     access                  = "Allow"
     protocol                = "Tcp"
     source_port_range       = "*"
-    destination_port_ranges = ["80", "81"]
+    destination_port_ranges = ["8000", "8080", "11434" ]
     source_address_prefix   = "*"
     #destination_address_prefix = var.spoke-aks-node-ip
     destination_address_prefix = "*"
