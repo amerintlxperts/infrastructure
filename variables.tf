@@ -26,10 +26,10 @@ variable "APPLICATION_OLLAMA" {
   default = true
 }
 
-variable "ENVIRONMENT_GRADE" {
-  description = "The environment for deployment (e.g., Production, Development)"
-  type        = string
-  default     = "Production"
+variable "PRODUCTION_ENVIRONMENT" {
+  description = "The environment for deployment Production=(true|false)"
+  type        = bool
+  default     = "true"
 }
 
 variable "HUB_NVA_USERNAME" {
