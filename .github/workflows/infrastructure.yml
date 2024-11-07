@@ -98,6 +98,10 @@ jobs:
           TF_VAR_LW_AGENT_TOKEN: ${{ secrets.LW_AGENT_TOKEN }}
           TF_VAR_ENVIRONMENT_GRADE: ${{ vars.ENVIRONMENT_GRADE }}
           TF_VAR_GPU_NODE_POOL: ${{ vars.GPU_NODE_POOL }}
+          TF_VAR_APPLICATION_DOCS: ${{ vars.APPLICATION_DOCS }}
+          TF_VAR_APPLICATION_OLLAMA: ${{ vars.APPLICATION_OLLAMA }}
+          TF_VAR_APPLICATION_DVWA: ${{ vars.APPLICATION_DVWA }}
+          TF_VAR_APPLICATION_VIDEO: ${{ vars.APPLICATION_VIDEO }}
           TF_IN_AUTOMATION: true
         run: |
           export exitcode=0
@@ -212,6 +216,10 @@ jobs:
           TF_VAR_LW_AGENT_TOKEN: ${{ secrets.LW_AGENT_TOKEN }}
           TF_VAR_ENVIRONMENT_GRADE: ${{ vars.ENVIRONMENT_GRADE }}
           TF_VAR_GPU_NODE_POOL: ${{ vars.GPU_NODE_POOL }}
+          TF_VAR_APPLICATION_DOCS: ${{ vars.APPLICATION_DOCS }}
+          TF_VAR_APPLICATION_OLLAMA: ${{ vars.APPLICATION_OLLAMA }}
+          TF_VAR_APPLICATION_DVWA: ${{ vars.APPLICATION_DVWA }}
+          TF_VAR_APPLICATION_VIDEO: ${{ vars.APPLICATION_VIDEO }}
           TF_IN_AUTOMATION: true
         run: terraform apply -auto-approve tfplan
 
@@ -273,6 +281,10 @@ jobs:
           TF_VAR_LW_AGENT_TOKEN: ${{ secrets.LW_AGENT_TOKEN }}
           TF_VAR_ENVIRONMENT_GRADE: ${{ vars.ENVIRONMENT_GRADE }}
           TF_VAR_GPU_NODE_POOL: ${{ vars.GPU_NODE_POOL }}
+          TF_VAR_APPLICATION_DOCS: ${{ vars.APPLICATION_DOCS }}
+          TF_VAR_APPLICATION_OLLAMA: ${{ vars.APPLICATION_OLLAMA }}
+          TF_VAR_APPLICATION_DVWA: ${{ vars.APPLICATION_DVWA }}
+          TF_VAR_APPLICATION_VIDEO: ${{ vars.APPLICATION_VIDEO }}
           TF_IN_AUTOMATION: true
         run: |
           terraform destroy -auto-approve

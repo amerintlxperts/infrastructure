@@ -2,6 +2,30 @@ variable "PROJECT_NAME" {
   type = string
 }
 
+variable "APPLICATION_DOCS" {
+  description "Deploy Docs Application"
+  type = bool
+  default = true
+}
+
+variable "APPLICATION_VIDEO" {
+  description "Deploy Docs Application"
+  type = bool
+  default = true
+}
+
+variable "APPLICATION_DVWA" {
+  description "Deploy Docs Application"
+  type = bool
+  default = true
+}
+
+variable "APPLICATION_OLLAMA" {
+  description "Deploy Docs Application"
+  type = bool
+  default = true
+}
+
 variable "ENVIRONMENT_GRADE" {
   description = "The environment for deployment (e.g., Production, Development)"
   type        = string
