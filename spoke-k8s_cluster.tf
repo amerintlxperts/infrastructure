@@ -276,55 +276,55 @@ locals {
   manifests_infrastructure_repo_fqdn = "git@github.com:${var.MANIFESTS_INFRASTRUCTURE_REPO_NAME}.git"
 }
 
-resource "azurerm_kubernetes_flux_configuration" "docs" {
-  name                              = "docs"
-  cluster_id                        = azurerm_kubernetes_cluster.kubernetes_cluster.id
-  namespace                         = "cluster-config"
-  scope                             = "cluster"
-  continuous_reconciliation_enabled = true
-  git_repository {
-    url                      = local.manifests_applications_repo_fqdn
-    reference_type           = "branch"
-    reference_value          = "docs-version"
-    sync_interval_in_seconds = 60
-    ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
-  }
-  kustomizations {
-    name                       = "docs"
-    recreating_enabled         = true
-    garbage_collection_enabled = true
-    path                       = "./docs"
-    sync_interval_in_seconds   = 60
-  }
-  depends_on = [
-    azurerm_kubernetes_flux_configuration.infrastructure
-  ]
-}
+#resource "azurerm_kubernetes_flux_configuration" "docs" {
+#  name                              = "docs"
+#  cluster_id                        = azurerm_kubernetes_cluster.kubernetes_cluster.id
+#  namespace                         = "cluster-config"
+#  scope                             = "cluster"
+#  continuous_reconciliation_enabled = true
+#  git_repository {
+#    url                      = local.manifests_applications_repo_fqdn
+#    reference_type           = "branch"
+#    reference_value          = "docs-version"
+#    sync_interval_in_seconds = 60
+#    ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
+#  }
+#  kustomizations {
+#    name                       = "docs"
+#    recreating_enabled         = true
+#    garbage_collection_enabled = true
+#    path                       = "./docs"
+#    sync_interval_in_seconds   = 60
+#  }
+#  depends_on = [
+#    azurerm_kubernetes_flux_configuration.infrastructure
+#  ]
+#}
 
-resource "azurerm_kubernetes_flux_configuration" "video" {
-  name                              = "video"
-  cluster_id                        = azurerm_kubernetes_cluster.kubernetes_cluster.id
-  namespace                         = "cluster-config"
-  scope                             = "cluster"
-  continuous_reconciliation_enabled = true
-  git_repository {
-    url                      = local.manifests_applications_repo_fqdn
-    reference_type           = "branch"
-    reference_value          = "main"
-    sync_interval_in_seconds = 60
-    ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
-  }
-  kustomizations {
-    name                       = "video"
-    recreating_enabled         = true
-    garbage_collection_enabled = true
-    path                       = "./video"
-    sync_interval_in_seconds   = 60
-  }
-  depends_on = [
-    azurerm_kubernetes_flux_configuration.infrastructure
-  ]
-}
+#resource "azurerm_kubernetes_flux_configuration" "video" {
+#  name                              = "video"
+#  cluster_id                        = azurerm_kubernetes_cluster.kubernetes_cluster.id
+#  namespace                         = "cluster-config"
+#  scope                             = "cluster"
+#  continuous_reconciliation_enabled = true
+#  git_repository {
+#    url                      = local.manifests_applications_repo_fqdn
+#    reference_type           = "branch"
+#    reference_value          = "main"
+#    sync_interval_in_seconds = 60
+#    ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
+#  }
+#  kustomizations {
+#    name                       = "video"
+#    recreating_enabled         = true
+#    garbage_collection_enabled = true
+#    path                       = "./video"
+#    sync_interval_in_seconds   = 60
+#  }
+#  depends_on = [
+#    azurerm_kubernetes_flux_configuration.infrastructure
+#  ]
+#}
 
 resource "azurerm_kubernetes_flux_configuration" "ollama" {
   name                              = "ollama"
@@ -351,30 +351,30 @@ resource "azurerm_kubernetes_flux_configuration" "ollama" {
   ]
 }
 
-resource "azurerm_kubernetes_flux_configuration" "dvwa" {
-  name                              = "dvwa"
-  cluster_id                        = azurerm_kubernetes_cluster.kubernetes_cluster.id
-  namespace                         = "cluster-config"
-  scope                             = "cluster"
-  continuous_reconciliation_enabled = true
-  git_repository {
-    url                      = local.manifests_applications_repo_fqdn
-    reference_type           = "branch"
-    reference_value          = "main"
-    sync_interval_in_seconds = 60
-    ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
-  }
-  kustomizations {
-    name                       = "dvwa"
-    recreating_enabled         = true
-    garbage_collection_enabled = true
-    path                       = "./dvwa"
-    sync_interval_in_seconds   = 60
-  }
-  depends_on = [
-    azurerm_kubernetes_flux_configuration.infrastructure
-  ]
-}
+#resource "azurerm_kubernetes_flux_configuration" "dvwa" {
+#  name                              = "dvwa"
+#  cluster_id                        = azurerm_kubernetes_cluster.kubernetes_cluster.id
+#  namespace                         = "cluster-config"
+#  scope                             = "cluster"
+#  continuous_reconciliation_enabled = true
+#  git_repository {
+#    url                      = local.manifests_applications_repo_fqdn
+#    reference_type           = "branch"
+#    reference_value          = "main"
+#    sync_interval_in_seconds = 60
+#    ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
+#  }
+#  kustomizations {
+#    name                       = "dvwa"
+#    recreating_enabled         = true
+#    garbage_collection_enabled = true
+#    path                       = "./dvwa"
+#    sync_interval_in_seconds   = 60
+#  }
+#  depends_on = [
+#    azurerm_kubernetes_flux_configuration.infrastructure
+#  ]
+#}
 
 resource "azurerm_kubernetes_flux_configuration" "infrastructure" {
   name                              = "infrastructure"
