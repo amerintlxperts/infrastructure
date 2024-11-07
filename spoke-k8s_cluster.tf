@@ -35,8 +35,7 @@ resource "azurerm_container_registry" "container_registry" {
   name                = random_string.acr_name.result
   resource_group_name = azurerm_resource_group.azure_resource_group.name
   location            = azurerm_resource_group.azure_resource_group.location
-  #sku                           = var.ENVIRONMENT_GRADE == "Production" ? "Standard" : "Basic"
-  sku                           = "Basic"
+  sku                           = var.PRODUCTION_ENVIRONMENT ? "Standard" : "Basic"
   admin_enabled                 = false
   public_network_access_enabled = true
   anonymous_pull_enabled        = false
@@ -111,8 +110,8 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   default_node_pool {
     temporary_name_for_rotation = "rotation"
     name                        = "system"
-    node_count                  = var.ENVIRONMENT_GRADE == "Production" ? 3 : 1
-    vm_size                     = var.ENVIRONMENT_GRADE == "Production" ? local.vm-image["aks"].size : local.vm-image["aks"].size-dev
+    node_count                  = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : 1
+    vm_size                     = var.PRODUCTION_ENVIRONMENT == "Production" ? local.vm-image["aks"].size : local.vm-image["aks"].size-dev
     os_sku                      = "AzureLinux"
     max_pods                    = "75"
     orchestrator_version        = "1.30"
@@ -143,9 +142,9 @@ resource "azurerm_kubernetes_cluster_node_pool" "node-pool" {
   count                 = var.GPU_NODE_POOL ? 1 : 0
   name                  = "gpu"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.kubernetes_cluster.id
-  vm_size               = var.ENVIRONMENT_GRADE == "Production" ? local.vm-image["aks"].gpu-size : local.vm-image["aks"].gpu-size-dev
+  vm_size               = var.PRODUCTION_ENVIRONMENT ? local.vm-image["aks"].gpu-size : local.vm-image["aks"].gpu-size-dev
   os_sku                = "AzureLinux"
-  auto_scaling_enabled  = var.ENVIRONMENT_GRADE == "Production" ? true : false
+  auto_scaling_enabled  = var.PRODUCTION_ENVIRONMENT
   node_count            = 1
   node_taints           = ["nvidia.com/gpu=true:NoSchedule"]
   node_labels = {
@@ -153,7 +152,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "node-pool" {
   }
   os_disk_type      = "Ephemeral"
   ultra_ssd_enabled = true
-  os_disk_size_gb   = var.ENVIRONMENT_GRADE == "Production" ? "256" : "175"
+  os_disk_size_gb   = var.PRODUCTION_ENVIRONMENT == "Production" ? "256" : "175"
   max_pods          = "50"
   zones             = ["1"]
   vnet_subnet_id    = azurerm_subnet.spoke_subnet.id
