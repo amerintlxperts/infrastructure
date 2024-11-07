@@ -88,7 +88,7 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
         VAR-spoke-virtual-network_netmask        = cidrnetmask(var.spoke-virtual-network_address_prefix)
         VAR-spoke-aks-node-ip                    = var.spoke-aks-node-ip
         VAR-hub-nva-vip                          = var.hub-nva-vip
-        VAR-hub-nva-ai-vip                          = var.hub-nva-ai-vip
+        VAR-hub-nva-ai-vip                       = var.hub-nva-ai-vip
         VAR-HUB_NVA_USERNAME                     = var.HUB_NVA_USERNAME
         VAR-CERTIFICATE                          = tls_self_signed_cert.self_signed_cert.cert_pem
         VAR-PRIVATEKEY                           = tls_private_key.private_key.private_key_pem
@@ -108,7 +108,7 @@ resource "azurerm_managed_disk" "log_disk" {
   resource_group_name  = azurerm_resource_group.azure_resource_group.name
   storage_account_type = "Standard_LRS"
   create_option        = "Empty"
-  disk_size_gb         = 10
+  disk_size_gb         = 50
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "log_disk" {
