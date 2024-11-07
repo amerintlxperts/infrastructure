@@ -277,6 +277,7 @@ locals {
 }
 
 resource "azurerm_kubernetes_flux_configuration" "docs" {
+  count                             = var.APPLICATION_DOCS ? 1 : 0
   name                              = "docs"
   cluster_id                        = azurerm_kubernetes_cluster.kubernetes_cluster.id
   namespace                         = "cluster-config"
@@ -302,6 +303,7 @@ resource "azurerm_kubernetes_flux_configuration" "docs" {
 }
 
 resource "azurerm_kubernetes_flux_configuration" "video" {
+  count                             = var.APPLICATION_VIDEO ? 1 : 0
   name                              = "video"
   cluster_id                        = azurerm_kubernetes_cluster.kubernetes_cluster.id
   namespace                         = "cluster-config"
@@ -327,6 +329,7 @@ resource "azurerm_kubernetes_flux_configuration" "video" {
 }
 
 resource "azurerm_kubernetes_flux_configuration" "ollama" {
+  count                             = var.APPLICATION_OLLAMA ? 1 : 0
   name                              = "ollama"
   cluster_id                        = azurerm_kubernetes_cluster.kubernetes_cluster.id
   namespace                         = "cluster-config"
@@ -352,6 +355,7 @@ resource "azurerm_kubernetes_flux_configuration" "ollama" {
 }
 
 resource "azurerm_kubernetes_flux_configuration" "dvwa" {
+  count                             = var.APPLICATION_OLLAMA ? 1 : 0
   name                              = "dvwa"
   cluster_id                        = azurerm_kubernetes_cluster.kubernetes_cluster.id
   namespace                         = "cluster-config"
