@@ -39,6 +39,9 @@ resource "azurerm_container_registry" "container_registry" {
   admin_enabled                 = false
   public_network_access_enabled = true
   anonymous_pull_enabled        = false
+  provisioner "local-exec" {
+    command = "gh workflow run docs-builder --repo ${var.GITHUB_ORG}/${var.DOCS_BUILDER_REPO_NAME} --ref main"
+  }
 }
 
 resource "azurerm_log_analytics_workspace" "log_analytics" {

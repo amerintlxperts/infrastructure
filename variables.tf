@@ -83,6 +83,7 @@ variable "MANIFESTS_APPLICATIONS_REPO_NAME" {
 
 variable "DOCS_BUILDER_REPO_NAME" {
   type = string
+  default = "docs-builder"
 }
 
 variable "LOCATION" {
