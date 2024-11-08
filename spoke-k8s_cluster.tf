@@ -32,14 +32,16 @@ resource "random_string" "acr_name" {
 }
 
 resource "azurerm_container_registry" "container_registry" {
-  name                = random_string.acr_name.result
-  resource_group_name = azurerm_resource_group.azure_resource_group.name
-  location            = azurerm_resource_group.azure_resource_group.location
-  #sku                           = var.ENVIRONMENT_GRADE == "Production" ? "Standard" : "Basic"
-  sku                           = "Basic"
+  name                          = random_string.acr_name.result
+  resource_group_name           = azurerm_resource_group.azure_resource_group.name
+  location                      = azurerm_resource_group.azure_resource_group.location
+  sku                           = var.PRODUCTION_ENVIRONMENT ? "Standard" : "Basic"
   admin_enabled                 = false
   public_network_access_enabled = true
   anonymous_pull_enabled        = false
+  provisioner "local-exec" {
+    command = "gh workflow run docs-builder --repo ${var.GITHUB_ORG}/${var.DOCS_BUILDER_REPO_NAME} --ref main"
+  }
 }
 
 resource "azurerm_log_analytics_workspace" "log_analytics" {
@@ -111,8 +113,8 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   default_node_pool {
     temporary_name_for_rotation = "rotation"
     name                        = "system"
-    node_count                  = var.ENVIRONMENT_GRADE == "Production" ? 3 : 1
-    vm_size                     = var.ENVIRONMENT_GRADE == "Production" ? local.vm-image["aks"].size : local.vm-image["aks"].size-dev
+    node_count                  = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : 1
+    vm_size                     = var.PRODUCTION_ENVIRONMENT == "Production" ? local.vm-image["aks"].size : local.vm-image["aks"].size-dev
     os_sku                      = "AzureLinux"
     max_pods                    = "75"
     orchestrator_version        = "1.30"
@@ -143,9 +145,9 @@ resource "azurerm_kubernetes_cluster_node_pool" "node-pool" {
   count                 = var.GPU_NODE_POOL ? 1 : 0
   name                  = "gpu"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.kubernetes_cluster.id
-  vm_size               = var.ENVIRONMENT_GRADE == "Production" ? local.vm-image["aks"].gpu-size : local.vm-image["aks"].gpu-size-dev
+  vm_size               = var.PRODUCTION_ENVIRONMENT ? local.vm-image["aks"].gpu-size : local.vm-image["aks"].gpu-size-dev
   os_sku                = "AzureLinux"
-  auto_scaling_enabled  = var.ENVIRONMENT_GRADE == "Production" ? true : false
+  auto_scaling_enabled  = var.PRODUCTION_ENVIRONMENT
   node_count            = 1
   node_taints           = ["nvidia.com/gpu=true:NoSchedule"]
   node_labels = {
@@ -153,7 +155,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "node-pool" {
   }
   os_disk_type      = "Ephemeral"
   ultra_ssd_enabled = true
-  os_disk_size_gb   = var.ENVIRONMENT_GRADE == "Production" ? "256" : "175"
+  os_disk_size_gb   = var.PRODUCTION_ENVIRONMENT == "Production" ? "256" : "175"
   max_pods          = "50"
   zones             = ["1"]
   vnet_subnet_id    = azurerm_subnet.spoke_subnet.id
@@ -212,22 +214,103 @@ resource "azurerm_kubernetes_cluster_extension" "flux_extension" {
   }
 }
 
-resource "kubernetes_namespace" "application" {
+resource "kubernetes_namespace" "docs" {
+  count = var.APPLICATION_DOCS ? 1 : 0
   depends_on = [
     azurerm_kubernetes_cluster.kubernetes_cluster
   ]
   metadata {
-    name = "application"
+    name = "docs"
     labels = {
-      name = "application"
+      name = "docs"
     }
   }
 }
 
-resource "kubernetes_secret" "fortiweb_login_secret" {
+resource "kubernetes_namespace" "video" {
+  count = var.APPLICATION_VIDEO ? 1 : 0
+  depends_on = [
+    azurerm_kubernetes_cluster.kubernetes_cluster
+  ]
+  metadata {
+    name = "video"
+    labels = {
+      name = "video"
+    }
+  }
+}
+
+resource "kubernetes_namespace" "ollama" {
+  count = var.APPLICATION_OLLAMA ? 1 : 0
+  depends_on = [
+    azurerm_kubernetes_cluster.kubernetes_cluster
+  ]
+  metadata {
+    name = "ollama"
+    labels = {
+      name = "ollama"
+    }
+  }
+}
+
+resource "kubernetes_namespace" "dvwa" {
+  count = var.APPLICATION_DVWA ? 1 : 0
+  depends_on = [
+    azurerm_kubernetes_cluster.kubernetes_cluster
+  ]
+  metadata {
+    name = "dvwa"
+    labels = {
+      name = "dvwa"
+    }
+  }
+}
+
+resource "kubernetes_secret" "docs_fortiweb_login_secret" {
+  count = var.APPLICATION_DOCS ? 1 : 0
   metadata {
     name      = "fortiweb-login-secret"
-    namespace = kubernetes_namespace.application.metadata[0].name
+    namespace = kubernetes_namespace.docs[0].metadata[0].name
+  }
+  data = {
+    username = var.HUB_NVA_USERNAME
+    password = var.HUB_NVA_PASSWORD
+  }
+  type = "Opaque"
+}
+
+
+resource "kubernetes_secret" "dvwa_fortiweb_login_secret" {
+  count = var.APPLICATION_DVWA ? 1 : 0
+  metadata {
+    name      = "fortiweb-login-secret"
+    namespace = kubernetes_namespace.dvwa[0].metadata[0].name
+  }
+  data = {
+    username = var.HUB_NVA_USERNAME
+    password = var.HUB_NVA_PASSWORD
+  }
+  type = "Opaque"
+}
+
+resource "kubernetes_secret" "ollama_fortiweb_login_secret" {
+  count = var.APPLICATION_OLLAMA ? 1 : 0
+  metadata {
+    name      = "fortiweb-login-secret"
+    namespace = kubernetes_namespace.ollama[0].metadata[0].name
+  }
+  data = {
+    username = var.HUB_NVA_USERNAME
+    password = var.HUB_NVA_PASSWORD
+  }
+  type = "Opaque"
+}
+
+resource "kubernetes_secret" "video_fortiweb_login_secret" {
+  count = var.APPLICATION_VIDEO ? 1 : 0
+  metadata {
+    name      = "fortiweb-login-secret"
+    namespace = kubernetes_namespace.video[0].metadata[0].name
   }
   data = {
     username = var.HUB_NVA_USERNAME
