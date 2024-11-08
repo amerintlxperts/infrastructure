@@ -273,42 +273,42 @@ variable "hub-nva-gateway" {
   }
 }
 
-variable "hub-nva-docs-vip" {
+variable "hub-nva-vip-docs" {
   default     = "10.0.0.5"
   description = "Hub NVA Gateway Virtual IP Address for Docs"
   type        = string
   validation {
-    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-docs-vip))
+    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-vip-docs))
     error_message = "The IP address must be a valid IPv4 format (e.g., 10.0.0.5)."
   }
 }
 
-variable "hub-nva-ollama-vip" {
+variable "hub-nva-vip-dvwa" {
   default     = "10.0.0.6"
-  description = "Hub NVA Gateway Virtual IP Address for Ollama"
+  description = "Hub NVA Gateway Virtual IP Address for DVWA"
   type        = string
   validation {
-    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-ollama-vip))
+    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-vip-dvwa))
     error_message = "The IP address must be a valid IPv4 format (e.g., 10.0.0.6)."
   }
 }
 
-variable "hub-nva-dvwa-vip" {
+variable "hub-nva-vip-ollama" {
   default     = "10.0.0.7"
-  description = "Hub NVA Gateway Virtual IP Address for DVWA"
+  description = "Hub NVA Gateway Virtual IP Address for Ollama"
   type        = string
   validation {
-    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-dvwa-vip))
+    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-vip-ollama))
     error_message = "The IP address must be a valid IPv4 format (e.g., 10.0.0.7)."
   }
 }
 
-variable "hub-nva-video-vip" {
+variable "hub-nva-vip-video" {
   default     = "10.0.0.8"
   description = "Hub NVA Gateway Virtual IP Address for Video"
   type        = string
   validation {
-    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-video-vip))
+    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-vip-video))
     error_message = "The IP address must be a valid IPv4 format (e.g., 10.0.0.8)."
   }
 }
