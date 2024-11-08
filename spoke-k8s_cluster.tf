@@ -385,9 +385,9 @@ resource "azurerm_kubernetes_flux_configuration" "docs" {
   ]
 }
 
-resource "azurerm_kubernetes_flux_configuration" "video" {
-  count                             = var.APPLICATION_VIDEO ? 1 : 0
-  name                              = "video"
+resource "azurerm_kubernetes_flux_configuration" "dvwa" {
+  count                             = var.APPLICATION_OLLAMA ? 1 : 0
+  name                              = "dvwa"
   cluster_id                        = azurerm_kubernetes_cluster.kubernetes_cluster.id
   namespace                         = "cluster-config"
   scope                             = "cluster"
@@ -395,15 +395,15 @@ resource "azurerm_kubernetes_flux_configuration" "video" {
   git_repository {
     url                      = local.manifests_applications_repo_fqdn
     reference_type           = "branch"
-    reference_value          = "main"
+    reference_value          = "dvwa-version"
     sync_interval_in_seconds = 60
     ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
   }
   kustomizations {
-    name                       = "video"
+    name                       = "dvwa"
     recreating_enabled         = true
     garbage_collection_enabled = true
-    path                       = "./video"
+    path                       = "./dvwa"
     sync_interval_in_seconds   = 60
   }
   depends_on = [
@@ -421,7 +421,7 @@ resource "azurerm_kubernetes_flux_configuration" "ollama" {
   git_repository {
     url                      = local.manifests_applications_repo_fqdn
     reference_type           = "branch"
-    reference_value          = "main"
+    reference_value          = "ollama-version"
     sync_interval_in_seconds = 60
     ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
   }
@@ -437,9 +437,9 @@ resource "azurerm_kubernetes_flux_configuration" "ollama" {
   ]
 }
 
-resource "azurerm_kubernetes_flux_configuration" "dvwa" {
-  count                             = var.APPLICATION_OLLAMA ? 1 : 0
-  name                              = "dvwa"
+resource "azurerm_kubernetes_flux_configuration" "video" {
+  count                             = var.APPLICATION_VIDEO ? 1 : 0
+  name                              = "video"
   cluster_id                        = azurerm_kubernetes_cluster.kubernetes_cluster.id
   namespace                         = "cluster-config"
   scope                             = "cluster"
@@ -447,15 +447,15 @@ resource "azurerm_kubernetes_flux_configuration" "dvwa" {
   git_repository {
     url                      = local.manifests_applications_repo_fqdn
     reference_type           = "branch"
-    reference_value          = "main"
+    reference_value          = "video-version"
     sync_interval_in_seconds = 60
     ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
   }
   kustomizations {
-    name                       = "dvwa"
+    name                       = "video"
     recreating_enabled         = true
     garbage_collection_enabled = true
-    path                       = "./dvwa"
+    path                       = "./video"
     sync_interval_in_seconds   = 60
   }
   depends_on = [
