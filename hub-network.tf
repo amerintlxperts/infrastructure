@@ -130,7 +130,7 @@ resource "azurerm_network_security_group" "hub-internal_network_security_group" 
     access                  = "Allow"
     protocol                = "Tcp"
     source_port_range       = "*"
-    destination_port_ranges = ["8000", "8080", "11434" ]
+    destination_port_ranges = ["8000", "8080", "11434"]
     source_address_prefix   = "*"
     #destination_address_prefix = var.spoke-aks-node-ip
     destination_address_prefix = "*"

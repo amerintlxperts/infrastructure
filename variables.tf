@@ -4,26 +4,26 @@ variable "PROJECT_NAME" {
 
 variable "APPLICATION_DOCS" {
   description = "Deploy Docs Application"
-  type = bool
-  default = "true"
+  type        = bool
+  default     = "true"
 }
 
 variable "APPLICATION_VIDEO" {
   description = "Deploy Docs Application"
-  type = bool
-  default = "true"
+  type        = bool
+  default     = "true"
 }
 
 variable "APPLICATION_DVWA" {
   description = "Deploy Docs Application"
-  type = bool
-  default = "true"
+  type        = bool
+  default     = "true"
 }
 
 variable "APPLICATION_OLLAMA" {
   description = "Deploy Docs Application"
-  type = bool
-  default = "true"
+  type        = bool
+  default     = "true"
 }
 
 variable "PRODUCTION_ENVIRONMENT" {

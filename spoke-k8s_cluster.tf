@@ -32,9 +32,9 @@ resource "random_string" "acr_name" {
 }
 
 resource "azurerm_container_registry" "container_registry" {
-  name                = random_string.acr_name.result
-  resource_group_name = azurerm_resource_group.azure_resource_group.name
-  location            = azurerm_resource_group.azure_resource_group.location
+  name                          = random_string.acr_name.result
+  resource_group_name           = azurerm_resource_group.azure_resource_group.name
+  location                      = azurerm_resource_group.azure_resource_group.location
   sku                           = var.PRODUCTION_ENVIRONMENT ? "Standard" : "Basic"
   admin_enabled                 = false
   public_network_access_enabled = true
@@ -211,22 +211,102 @@ resource "azurerm_kubernetes_cluster_extension" "flux_extension" {
   }
 }
 
-resource "kubernetes_namespace" "application" {
+resource "kubernetes_namespace" "docs" {
+  count = var.APPLICATION_DOCS ? 1 : 0
   depends_on = [
     azurerm_kubernetes_cluster.kubernetes_cluster
   ]
   metadata {
-    name = "application"
+    name = "docs"
     labels = {
-      name = "application"
+      name = "docs"
     }
   }
 }
 
-resource "kubernetes_secret" "fortiweb_login_secret" {
+resource "kubernetes_namespace" "video" {
+  count = var.APPLICATION_VIDEO ? 1 : 0
+  depends_on = [
+    azurerm_kubernetes_cluster.kubernetes_cluster
+  ]
+  metadata {
+    name = "video"
+    labels = {
+      name = "video"
+    }
+  }
+}
+
+resource "kubernetes_namespace" "ollama" {
+  count = var.APPLICATION_OLLAMA ? 1 : 0
+  depends_on = [
+    azurerm_kubernetes_cluster.kubernetes_cluster
+  ]
+  metadata {
+    name = "ollama"
+    labels = {
+      name = "ollama"
+    }
+  }
+}
+
+resource "kubernetes_namespace" "dvwa" {
+  count = var.APPLICATION_DVWA ? 1 : 0
+  depends_on = [
+    azurerm_kubernetes_cluster.kubernetes_cluster
+  ]
+  metadata {
+    name = "dvwa"
+    labels = {
+      name = "dvwa"
+    }
+  }
+}
+
+resource "kubernetes_secret" "dvwa_fortiweb_login_secret" {
+  count = var.APPLICATION_DVWA ? 1 : 0
   metadata {
     name      = "fortiweb-login-secret"
-    namespace = kubernetes_namespace.application.metadata[0].name
+    namespace = kubernetes_namespace.dvwa.metadata[0].name
+  }
+  data = {
+    username = var.HUB_NVA_USERNAME
+    password = var.HUB_NVA_PASSWORD
+  }
+  type = "Opaque"
+}
+
+resource "kubernetes_secret" "video_fortiweb_login_secret" {
+  count = var.APPLICATION_VIDEO ? 1 : 0
+  metadata {
+    name      = "fortiweb-login-secret"
+    namespace = kubernetes_namespace.video.metadata[0].name
+  }
+  data = {
+    username = var.HUB_NVA_USERNAME
+    password = var.HUB_NVA_PASSWORD
+  }
+  type = "Opaque"
+}
+
+resource "kubernetes_secret" "ollama_fortiweb_login_secret" {
+  count = var.APPLICATION_OLLAMA ? 1 : 0
+  metadata {
+    name      = "fortiweb-login-secret"
+    namespace = kubernetes_namespace.ollama.metadata[0].name
+  }
+  data = {
+    username = var.HUB_NVA_USERNAME
+    password = var.HUB_NVA_PASSWORD
+  }
+  type = "Opaque"
+}
+
+resource "kubernetes_secret" "docs_fortiweb_login_secret" {
+  count = var.APPLICATION_DOCS ? 1 : 0
+  metadata {
+    name      = "fortiweb-login-secret"
+    namespace = kubernetes_namespace.docs.metadata[0].name
   }
   data = {
     username = var.HUB_NVA_USERNAME
