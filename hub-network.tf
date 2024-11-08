@@ -165,7 +165,7 @@ resource "azurerm_subnet_network_security_group_association" "hub-internal-subne
 }
 
 resource "azurerm_public_ip" "hub-nva-management_public_ip" {
-  count               = var.PRODUCTION_ENVIRONMENT ? 1 : 0
+  count               = var.PRODUCTION_ENVIRONMENT ? 0 : 1
   name                = "hub-nva-management_public_ip"
   location            = azurerm_resource_group.azure_resource_group.location
   resource_group_name = azurerm_resource_group.azure_resource_group.name
