@@ -5,7 +5,7 @@ resource "tls_private_key" "private_key" {
 
 resource "tls_self_signed_cert" "self_signed_cert" {
   private_key_pem = tls_private_key.private_key.private_key_pem
-  dns_names       = [data.azurerm_public_ip.hub-nva-vip_docs_public_ip[0].fqdn,data.azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].fqdn,data.azurerm_public_ip.hub-nva-vip_ollama_public_ip[0].fqdn,data.azurerm_public_ip.hub-nva-vip_video_public_ip[0].fqdn]
+  dns_names       = [data.azurerm_public_ip.hub-nva-vip_docs_public_ip.fqdn,data.azurerm_public_ip.hub-nva-vip_dvwa_public_ip.fqdn,data.azurerm_public_ip.hub-nva-vip_ollama_public_ip.fqdn,data.azurerm_public_ip.hub-nva-vip_video_public_ip.fqdn]
 
   subject {
     #common_name = data.azurerm_public_ip.hub-nva-vip_public_ip.fqdn
