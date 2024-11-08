@@ -78,7 +78,7 @@ resource "azurerm_network_security_group" "hub-external_network_security_group" 
   }
   security_rule {
     name                       = "VIP_rule-dvwa"
-    priority                   = 101
+    priority                   = 102
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
@@ -100,7 +100,7 @@ resource "azurerm_network_security_group" "hub-external_network_security_group" 
   }
   security_rule {
     name                       = "VIP_rule-video"
-    priority                   = 103
+    priority                   = 104
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
