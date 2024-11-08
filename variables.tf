@@ -273,23 +273,43 @@ variable "hub-nva-gateway" {
   }
 }
 
-variable "hub-nva-vip" {
+variable "hub-nva-docs-vip" {
   default     = "10.0.0.5"
-  description = "Hub NVA Gateway Virtual IP Address"
+  description = "Hub NVA Gateway Virtual IP Address for Docs"
   type        = string
   validation {
-    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-vip))
+    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-docs-vip))
     error_message = "The IP address must be a valid IPv4 format (e.g., 10.0.0.5)."
   }
 }
 
-variable "hub-nva-ai-vip" {
+variable "hub-nva-ollama-vip" {
   default     = "10.0.0.6"
-  description = "Hub NVA Gateway Virtual IP Address for AI"
+  description = "Hub NVA Gateway Virtual IP Address for Ollama"
   type        = string
   validation {
-    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-ai-vip))
+    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-ollama-vip))
     error_message = "The IP address must be a valid IPv4 format (e.g., 10.0.0.6)."
+  }
+}
+
+variable "hub-nva-dvwa-vip" {
+  default     = "10.0.0.7"
+  description = "Hub NVA Gateway Virtual IP Address for DVWA"
+  type        = string
+  validation {
+    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-dvwa-vip))
+    error_message = "The IP address must be a valid IPv4 format (e.g., 10.0.0.7)."
+  }
+}
+
+variable "hub-nva-video-vip" {
+  default     = "10.0.0.8"
+  description = "Hub NVA Gateway Virtual IP Address for Video"
+  type        = string
+  validation {
+    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-video-vip))
+    error_message = "The IP address must be a valid IPv4 format (e.g., 10.0.0.8)."
   }
 }
 

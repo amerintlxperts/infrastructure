@@ -77,7 +77,7 @@ resource "azurerm_network_security_group" "hub-external_network_security_group" 
     destination_address_prefix = var.hub-nva-vip
   }
   security_rule {
-    name                       = "VIP_ai_rule"
+    name                       = "VIP_ollama_rule"
     priority                   = 102
     direction                  = "Inbound"
     access                     = "Allow"
@@ -85,7 +85,7 @@ resource "azurerm_network_security_group" "hub-external_network_security_group" 
     source_port_range          = "*"
     destination_port_ranges    = ["80", "443"] #checkov:skip=CKV_AZURE_160: Allow HTTP redirects
     source_address_prefix      = "*"
-    destination_address_prefix = var.hub-nva-ai-vip
+    destination_address_prefix = var.hub-nva-ollama-vip
   }
 }
 
@@ -143,6 +143,7 @@ resource "azurerm_subnet_network_security_group_association" "hub-internal-subne
 }
 
 resource "azurerm_public_ip" "hub-nva-management_public_ip" {
+  count               = var.PRODUCTION_ENVIRONMENT ? 1 : 0
   name                = "hub-nva-management_public_ip"
   location            = azurerm_resource_group.azure_resource_group.location
   resource_group_name = azurerm_resource_group.azure_resource_group.name
@@ -151,22 +152,44 @@ resource "azurerm_public_ip" "hub-nva-management_public_ip" {
   domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-management"
 }
 
-resource "azurerm_public_ip" "hub-nva-vip_public_ai_ip" {
-  name                = "hub-nva-vip_public_ai_ip"
+resource "azurerm_public_ip" "hub-nva-vip_ollama_public_ip" {
+  count               = var.APPLICATION_OLLAMA ? 1 : 0
+  name                = "hub-nva-vip_ollama_public_ip"
   location            = azurerm_resource_group.azure_resource_group.location
   resource_group_name = azurerm_resource_group.azure_resource_group.name
   allocation_method   = "Static"
   sku                 = "Standard"
-  domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-ai"
+  domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-ollama"
 }
 
-resource "azurerm_public_ip" "hub-nva-vip_public_ip" {
-  name                = "hub-nva-vip_public_ip"
+resource "azurerm_public_ip" "hub-nva-vip_dvwa_public_ip" {
+  count               = var.APPLICATION_DVWA ? 1 : 0
+  name                = "hub-nva-vip_dvwa_public_ip"
   location            = azurerm_resource_group.azure_resource_group.location
   resource_group_name = azurerm_resource_group.azure_resource_group.name
   allocation_method   = "Static"
   sku                 = "Standard"
-  domain_name_label   = azurerm_resource_group.azure_resource_group.name
+  domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-dvwa"
+}
+
+resource "azurerm_public_ip" "hub-nva-vip_video_public_ip" {
+  count               = var.APPLICATION_VIDEO ? 1 : 0
+  name                = "hub-nva-vip_video_public_ip"
+  location            = azurerm_resource_group.azure_resource_group.location
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-video"
+}
+
+resource "azurerm_public_ip" "hub-nva-vip_docs_public_ip" {
+  count               = var.APPLICATION_DOCS ? 1 : 0
+  name                = "hub-nva-vip_docs_public_ip"
+  location            = azurerm_resource_group.azure_resource_group.location
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-docs"
 }
 
 resource "azurerm_availability_set" "hub-nva_availability_set" {
