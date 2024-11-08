@@ -9,21 +9,35 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
     private_ip_address_allocation = "Static"
     private_ip_address            = var.hub-nva-management-ip
     subnet_id                     = azurerm_subnet.hub-external_subnet.id
-    public_ip_address_id          = azurerm_public_ip.hub-nva-management_public_ip.id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
+    public_ip_address_id          = azurerm_public_ip.hub-nva-management_public_ip[0].id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
   }
   ip_configuration {
-    name                          = "hub-nva-external-vip_configuration"
+    name                          = "hub-nva-external-vip-docs_configuration"
     private_ip_address_allocation = "Static"
     private_ip_address            = var.hub-nva-vip-docs
     subnet_id                     = azurerm_subnet.hub-external_subnet.id
-    public_ip_address_id          = azurerm_public_ip.hub-nva-vip_docs_public_ip.id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
+    public_ip_address_id          = azurerm_public_ip.hub-nva-vip_docs_public_ip[0].id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
   }
   ip_configuration {
     name                          = "hub-nva-external-vip-ollama_configuration"
     private_ip_address_allocation = "Static"
     private_ip_address            = var.hub-nva-vip-ollama
     subnet_id                     = azurerm_subnet.hub-external_subnet.id
-    public_ip_address_id          = azurerm_public_ip.hub-nva-vip_ollama_public_ip.id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
+    public_ip_address_id          = azurerm_public_ip.hub-nva-vip_ollama_public_ip[0].id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
+  }
+  ip_configuration {
+    name                          = "hub-nva-external-vip-dvwa_configuration"
+    private_ip_address_allocation = "Static"
+    private_ip_address            = var.hub-nva-vip-dvwa
+    subnet_id                     = azurerm_subnet.hub-external_subnet.id
+    public_ip_address_id          = azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
+  }
+  ip_configuration {
+    name                          = "hub-nva-external-vip-video_configuration"
+    private_ip_address_allocation = "Static"
+    private_ip_address            = var.hub-nva-vip-video
+    subnet_id                     = azurerm_subnet.hub-external_subnet.id
+    public_ip_address_id          = azurerm_public_ip.hub-nva-vip_video_public_ip[0].id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
   }
 }
 
@@ -87,10 +101,10 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
         VAR-spoke-virtual-network_subnet         = cidrhost(var.spoke-virtual-network_address_prefix, 0)
         VAR-spoke-virtual-network_netmask        = cidrnetmask(var.spoke-virtual-network_address_prefix)
         VAR-spoke-aks-node-ip                    = var.spoke-aks-node-ip
-        VAR-hub-nva-vip-docs                          = var.hub-nva-vip-docs
-        VAR-hub-nva-vip-ollama                      = var.hub-nva-vip-ollama
-        VAR-hub-nva-vip-video                          = var.hub-nva-vip-video
-        VAR-hub-nva-vip-dvwa                      = var.hub-nva-vip-dvwa
+        VAR-hub-nva-vip-docs                     = var.hub-nva-vip-docs
+        VAR-hub-nva-vip-ollama                   = var.hub-nva-vip-ollama
+        VAR-hub-nva-vip-video                    = var.hub-nva-vip-video
+        VAR-hub-nva-vip-dvwa                     = var.hub-nva-vip-dvwa
         VAR-HUB_NVA_USERNAME                     = var.HUB_NVA_USERNAME
         VAR-CERTIFICATE                          = tls_self_signed_cert.self_signed_cert.cert_pem
         VAR-PRIVATEKEY                           = tls_private_key.private_key.private_key_pem
