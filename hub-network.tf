@@ -66,7 +66,7 @@ resource "azurerm_network_security_group" "hub-external_network_security_group" 
     destination_address_prefix = var.hub-nva-management-ip
   }
   security_rule {
-    name                       = "VIP_rule"
+    name                       = "VIP_rule-docs"
     priority                   = 101
     direction                  = "Inbound"
     access                     = "Allow"
@@ -74,18 +74,40 @@ resource "azurerm_network_security_group" "hub-external_network_security_group" 
     source_port_range          = "*"
     destination_port_ranges    = ["80", "443"] #checkov:skip=CKV_AZURE_160: Allow HTTP redirects
     source_address_prefix      = "*"
-    destination_address_prefix = var.hub-nva-vip
+    destination_address_prefix = var.hub-nva-vip-docs
   }
   security_rule {
-    name                       = "VIP_ollama_rule"
-    priority                   = 102
+    name                       = "VIP_rule-dvwa"
+    priority                   = 101
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_ranges    = ["80", "443"] #checkov:skip=CKV_AZURE_160: Allow HTTP redirects
     source_address_prefix      = "*"
-    destination_address_prefix = var.hub-nva-ollama-vip
+    destination_address_prefix = var.hub-nva-vip-dvwa
+  }
+  security_rule {
+    name                       = "VIP_rule-ollama"
+    priority                   = 103
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_ranges    = ["80", "443"] #checkov:skip=CKV_AZURE_160: Allow HTTP redirects
+    source_address_prefix      = "*"
+    destination_address_prefix = var.hub-nva-vip-ollama
+  }
+  security_rule {
+    name                       = "VIP_rule-video"
+    priority                   = 103
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_ranges    = ["80", "443"] #checkov:skip=CKV_AZURE_160: Allow HTTP redirects
+    source_address_prefix      = "*"
+    destination_address_prefix = var.hub-nva-vip-video
   }
 }
 
