@@ -267,7 +267,7 @@ resource "kubernetes_secret" "docs_fortiweb_login_secret" {
   count = var.APPLICATION_DOCS ? 1 : 0
   metadata {
     name      = "fortiweb-login-secret"
-    namespace = kubernetes_namespace.docs[0].metadata.name
+    namespace = kubernetes_namespace.docs[0].metadata[0].name
   }
   data = {
     username = var.HUB_NVA_USERNAME
@@ -281,7 +281,7 @@ resource "kubernetes_secret" "dvwa_fortiweb_login_secret" {
   count = var.APPLICATION_DVWA ? 1 : 0
   metadata {
     name      = "fortiweb-login-secret"
-    namespace = kubernetes_namespace.dvwa[0].metadata.name
+    namespace = kubernetes_namespace.dvwa[0].metadata[0].name
   }
   data = {
     username = var.HUB_NVA_USERNAME
@@ -294,7 +294,7 @@ resource "kubernetes_secret" "ollama_fortiweb_login_secret" {
   count = var.APPLICATION_OLLAMA ? 1 : 0
   metadata {
     name      = "fortiweb-login-secret"
-    namespace = kubernetes_namespace.ollama[0].metadata.name
+    namespace = kubernetes_namespace.ollama[0].metadata[0].name
   }
   data = {
     username = var.HUB_NVA_USERNAME
@@ -307,7 +307,7 @@ resource "kubernetes_secret" "video_fortiweb_login_secret" {
   count = var.APPLICATION_VIDEO ? 1 : 0
   metadata {
     name      = "fortiweb-login-secret"
-    namespace = kubernetes_namespace.video[0].metadata.name
+    namespace = kubernetes_namespace.video[0].metadata[0].name
   }
   data = {
     username = var.HUB_NVA_USERNAME
