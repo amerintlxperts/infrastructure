@@ -16,57 +16,49 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
       }
     ]
     
-    if var.APPLICATION_DOCS {
-      for_each += [
-        {
-          name                          = "hub-nva-external-vip-docs_configuration"
-          primary                       = false
-          private_ip_address_allocation = "Static"
-          private_ip_address            = var.hub-nva-vip-docs
-          subnet_id                     = azurerm_subnet.hub-external_subnet.id
-          public_ip_address_id          = azurerm_public_ip.hub-nva-vip_docs_public_ip[0].id
-        }
-      ]
-    }
+    for_each = var.APPLICATION_DOCS ? concat(for_each, [
+      {
+        name                          = "hub-nva-external-vip-docs_configuration"
+        primary                       = false
+        private_ip_address_allocation = "Static"
+        private_ip_address            = var.hub-nva-vip-docs
+        subnet_id                     = azurerm_subnet.hub-external_subnet.id
+        public_ip_address_id          = azurerm_public_ip.hub-nva-vip_docs_public_ip[0].id
+      }
+    ]) : for_each
 
-    if var.APPLICATION_DVWA {
-      for_each += [
-        {
-          name                          = "hub-nva-external-vip-dvwa_configuration"
-          primary                       = false
-          private_ip_address_allocation = "Static"
-          private_ip_address            = var.hub-nva-vip-dvwa
-          subnet_id                     = azurerm_subnet.hub-external_subnet.id
-          public_ip_address_id          = azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].id
-        }
-      ]
-    }
+    for_each = var.APPLICATION_DVWA ? concat(for_each, [
+      {
+        name                          = "hub-nva-external-vip-dvwa_configuration"
+        primary                       = false
+        private_ip_address_allocation = "Static"
+        private_ip_address            = var.hub-nva-vip-dvwa
+        subnet_id                     = azurerm_subnet.hub-external_subnet.id
+        public_ip_address_id          = azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].id
+      }
+    ]) : for_each
 
-    if var.APPLICATION_OLLAMA {
-      for_each += [
-        {
-          name                          = "hub-nva-external-vip-ollama_configuration"
-          primary                       = false
-          private_ip_address_allocation = "Static"
-          private_ip_address            = var.hub-nva-vip-ollama
-          subnet_id                     = azurerm_subnet.hub-external_subnet.id
-          public_ip_address_id          = azurerm_public_ip.hub-nva-vip_ollama_public_ip[0].id
-        }
-      ]
-    }
+    for_each = var.APPLICATION_OLLAMA ? concat(for_each, [
+      {
+        name                          = "hub-nva-external-vip-ollama_configuration"
+        primary                       = false
+        private_ip_address_allocation = "Static"
+        private_ip_address            = var.hub-nva-vip-ollama
+        subnet_id                     = azurerm_subnet.hub-external_subnet.id
+        public_ip_address_id          = azurerm_public_ip.hub-nva-vip_ollama_public_ip[0].id
+      }
+    ]) : for_each
 
-    if var.APPLICATION_VIDEO {
-      for_each += [
-        {
-          name                          = "hub-nva-external-vip-video_configuration"
-          primary                       = false
-          private_ip_address_allocation = "Static"
-          private_ip_address            = var.hub-nva-vip-video
-          subnet_id                     = azurerm_subnet.hub-external_subnet.id
-          public_ip_address_id          = azurerm_public_ip.hub-nva-vip_video_public_ip[0].id
-        }
-      ]
-    }
+    for_each = var.APPLICATION_VIDEO ? concat(for_each, [
+      {
+        name                          = "hub-nva-external-vip-video_configuration"
+        primary                       = false
+        private_ip_address_allocation = "Static"
+        private_ip_address            = var.hub-nva-vip-video
+        subnet_id                     = azurerm_subnet.hub-external_subnet.id
+        public_ip_address_id          = azurerm_public_ip.hub-nva-vip_video_public_ip[0].id
+      }
+    ]) : for_each
 
     content {
       name                          = ip_configuration.value.name
