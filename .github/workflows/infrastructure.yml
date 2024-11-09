@@ -221,6 +221,7 @@ jobs:
           TF_VAR_APPLICATION_DVWA: ${{ vars.APPLICATION_DVWA }}
           TF_VAR_APPLICATION_VIDEO: ${{ vars.APPLICATION_VIDEO }}
           TF_IN_AUTOMATION: true
+          GH_TOKEN: ${{ github.PAT }}
         run: terraform apply -auto-approve tfplan
 
   destroy:
