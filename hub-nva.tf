@@ -76,7 +76,7 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
   #checkov:skip=CKV_AZURE_178: Allow Fortigate to present HTTPS login UI instead of SSH
   #checkov:skip=CKV_AZURE_149: Allow Fortigate to present HTTPS login UI instead of SSH
   #checkov:skip=CKV_AZURE_1: Allow Fortigate to present HTTPS login UI instead of SSH
-  depends_on                      = [null_resource.marketplace_agreement, azurerm_managed_disk.log_disk]
+  #depends_on                      = [null_resource.marketplace_agreement, azurerm_managed_disk.log_disk]
   name                            = "hub-nva_virtual_machine"
   computer_name                   = "hub-nva"
   availability_set_id             = azurerm_availability_set.hub-nva_availability_set.id
