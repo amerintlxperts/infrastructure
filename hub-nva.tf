@@ -21,8 +21,8 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
           private_ip_address_allocation = "Static"
           private_ip_address            = var.hub-nva-vip-docs
           subnet_id                     = azurerm_subnet.hub-external_subnet.id
-          public_ip_address_id          = var.azurerm_public_ip.hub-nva-vip_docs_public_ip[0].id
-          include                       = var.APPLICATION_DOCS
+          public_ip_address_id          = azurerm_public_ip.hub-nva-vip_docs_public_ip[0].id
+          enabled                       = var.APPLICATION_DOCS
         },
         {
           name                          = "hub-nva-external-vip-dvwa_configuration"
@@ -30,8 +30,8 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
           private_ip_address_allocation = "Static"
           private_ip_address            = var.hub-nva-vip-dvwa
           subnet_id                     = azurerm_subnet.hub-external_subnet.id
-          public_ip_address_id          = var.azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].id
-          include                       = var.APPLICATION_DVWA
+          public_ip_address_id          = azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].id
+          enabled                       = var.APPLICATION_DVWA
         },
         {
           name                          = "hub-nva-external-vip-ollama_configuration"
@@ -40,7 +40,7 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
           private_ip_address            = var.hub-nva-vip-ollama
           subnet_id                     = azurerm_subnet.hub-external_subnet.id
           public_ip_address_id          = azurerm_public_ip.hub-nva-vip_ollama_public_ip[0].id
-          include                       = var.APPLICATION_OLLAMA
+          enabled                       = var.APPLICATION_OLLAMA
         },
         {
           name                          = "hub-nva-external-vip-video_configuration"
@@ -49,9 +49,9 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
           private_ip_address            = var.hub-nva-vip-video
           subnet_id                     = azurerm_subnet.hub-external_subnet.id
           public_ip_address_id          = azurerm_public_ip.hub-nva-vip_video_public_ip[0].id
-          include                       = var.APPLICATION_VIDEO
+          enabled                       = var.APPLICATION_VIDEO
         }
-      ] : config if config.include
+      ] : config if config.enabled
     ]
 
     content {
