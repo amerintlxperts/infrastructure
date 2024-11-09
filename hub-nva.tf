@@ -1,3 +1,4 @@
+
 resource "azurerm_network_interface" "hub-nva-external_network_interface" {
   name                           = "hub-nva-external_network_interface"
   location                       = azurerm_resource_group.azure_resource_group.location
@@ -10,7 +11,6 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
     private_ip_address_allocation = "Static"
     private_ip_address            = var.hub-nva-management-ip
     subnet_id                     = azurerm_subnet.hub-external_subnet.id
-    public_ip_address_id          = var.PRODUCTION_ENVIRONMENT ? null : azurerm_public_ip.hub-nva-management_public_ip[0].id
   }
 
 #  dynamic "ip_configuration" {
