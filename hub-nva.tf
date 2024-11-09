@@ -13,49 +13,49 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
     public_ip_address_id          = var.PRODUCTION_ENVIRONMENT ? null : azurerm_public_ip.hub-nva-management_public_ip[0].id
   }
 
-  dynamic "ip_configuration" {
-    for_each = var.APPLICATION_DOCS ? ["docs"] : []
-    content {
-      name                          = "hub-nva-external-vip-docs_configuration"
-      private_ip_address_allocation = "Static"
-      private_ip_address            = var.hub-nva-vip-docs
-      subnet_id                     = azurerm_subnet.hub-external_subnet.id
-      public_ip_address_id          = azurerm_public_ip.hub-nva-vip_docs_public_ip[0].id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
-    }
-  }
+#  dynamic "ip_configuration" {
+#    for_each = var.APPLICATION_DOCS ? ["docs"] : []
+#    content {
+#      name                          = "hub-nva-external-vip-docs_configuration"
+#      private_ip_address_allocation = "Static"
+#      private_ip_address            = var.hub-nva-vip-docs
+#      subnet_id                     = azurerm_subnet.hub-external_subnet.id
+#      public_ip_address_id          = azurerm_public_ip.hub-nva-vip_docs_public_ip[0].id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
+#    }
+#  }
 
-  dynamic "ip_configuration" {
-    for_each = var.APPLICATION_DVWA ? ["dvwa"] : []
-    content {
-      name                          = "hub-nva-external-vip-dvwa_configuration"
-      private_ip_address_allocation = "Static"
-      private_ip_address            = var.hub-nva-vip-dvwa
-      subnet_id                     = azurerm_subnet.hub-external_subnet.id
-      public_ip_address_id          = azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
-    }
-  }
+#  dynamic "ip_configuration" {
+#    for_each = var.APPLICATION_DVWA ? ["dvwa"] : []
+#    content {
+#      name                          = "hub-nva-external-vip-dvwa_configuration"
+#      private_ip_address_allocation = "Static"
+#      private_ip_address            = var.hub-nva-vip-dvwa
+#      subnet_id                     = azurerm_subnet.hub-external_subnet.id
+#      public_ip_address_id          = azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
+#    }
+#  }
 
-  dynamic "ip_configuration" {
-    for_each = var.APPLICATION_OLLAMA ? ["ollama"] : []
-    content {
-      name                          = "hub-nva-external-vip-ollama_configuration"
-      private_ip_address_allocation = "Static"
-      private_ip_address            = var.hub-nva-vip-ollama
-      subnet_id                     = azurerm_subnet.hub-external_subnet.id
-      public_ip_address_id          = azurerm_public_ip.hub-nva-vip_ollama_public_ip[0].id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
-    }
-  }
+#  dynamic "ip_configuration" {
+#    for_each = var.APPLICATION_OLLAMA ? ["ollama"] : []
+#    content {
+#      name                          = "hub-nva-external-vip-ollama_configuration"
+#      private_ip_address_allocation = "Static"
+#      private_ip_address            = var.hub-nva-vip-ollama
+#      subnet_id                     = azurerm_subnet.hub-external_subnet.id
+#      public_ip_address_id          = azurerm_public_ip.hub-nva-vip_ollama_public_ip[0].id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
+#    }
+#  }
 
-  dynamic "ip_configuration" {
-    for_each = var.APPLICATION_VIDEO ? ["video"] : []
-    content {
-      name                          = "hub-nva-external-vip-video_configuration"
-      private_ip_address_allocation = "Static"
-      private_ip_address            = var.hub-nva-vip-video
-      subnet_id                     = azurerm_subnet.hub-external_subnet.id
-      public_ip_address_id          = azurerm_public_ip.hub-nva-vip_video_public_ip[0].id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
-    }
-  }
+#  dynamic "ip_configuration" {
+#    for_each = var.APPLICATION_VIDEO ? ["video"] : []
+#    content {
+#      name                          = "hub-nva-external-vip-video_configuration"
+#      private_ip_address_allocation = "Static"
+#      private_ip_address            = var.hub-nva-vip-video
+#      subnet_id                     = azurerm_subnet.hub-external_subnet.id
+#      public_ip_address_id          = azurerm_public_ip.hub-nva-vip_video_public_ip[0].id #checkov:skip=CKV_AZURE_119:Fortigate gets a public IP
+#    }
+#  }
 }
 
 resource "azurerm_network_interface" "hub-nva-internal_network_interface" {
@@ -88,14 +88,14 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
   network_interface_ids           = [azurerm_network_interface.hub-nva-external_network_interface.id, azurerm_network_interface.hub-nva-internal_network_interface.id]
   size                            = var.PRODUCTION_ENVIRONMENT ? local.vm-image[var.hub-nva-image].size : local.vm-image[var.hub-nva-image].size-dev
   allow_extension_operations      = false
-  identity {
-    type = "SystemAssigned"
-  }
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = var.PRODUCTION_ENVIRONMENT ? "Premium_LRS" : "Standard_LRS"
-    disk_size_gb         = var.PRODUCTION_ENVIRONMENT ? 256 : 128
-  }
+#  identity {
+#    type = "SystemAssigned"
+#  }
+#  os_disk {
+#    caching              = "ReadWrite"
+#    storage_account_type = var.PRODUCTION_ENVIRONMENT ? "Premium_LRS" : "Standard_LRS"
+#    disk_size_gb         = var.PRODUCTION_ENVIRONMENT ? 256 : 128
+#  }
   plan {
     name      = local.vm-image[var.hub-nva-image].sku
     product   = local.vm-image[var.hub-nva-image].offer
