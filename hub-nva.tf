@@ -95,7 +95,7 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = var.PRODUCTION_ENVIRONMENT ? "Premium_LRS" : "Standard_LRS"
-    #disk_size_gb         = 256
+    disk_size_gb = var.PRODUCTION_ENVIRONMENT ? 256 : 128
   }
   plan {
     name      = local.vm-image[var.hub-nva-image].sku
@@ -127,8 +127,6 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
         VAR-PRIVATEKEY                           = tls_private_key.private_key.private_key_pem
         VAR-fwb_license_file                     = ""
         VAR-fwb_license_fortiflex                = ""
-        VAR-spoke-aks-node-ollama-port           = var.spoke-aks-node-ollama-port
-        VAR-spoke-aks-node-ollama-webui-port     = var.spoke-aks-node-ollama-webui-port
         VAR-spoke-aks-network                    = var.spoke-aks-subnet_prefix
       }
     )
@@ -141,7 +139,7 @@ resource "azurerm_managed_disk" "log_disk" {
   resource_group_name  = azurerm_resource_group.azure_resource_group.name
   storage_account_type = "Standard_LRS"
   create_option        = "Empty"
-  disk_size_gb         = 50
+  disk_size_gb         = var.PRODUCTION_ENVIRONMENT ? 128 : 36
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "log_disk" {
