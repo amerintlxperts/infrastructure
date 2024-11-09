@@ -88,7 +88,6 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
   network_interface_ids           = [azurerm_network_interface.hub-nva-external_network_interface.id, azurerm_network_interface.hub-nva-internal_network_interface.id]
   size                            = var.PRODUCTION_ENVIRONMENT ? local.vm-image[var.hub-nva-image].size : local.vm-image[var.hub-nva-image].size-dev
   allow_extension_operations      = false
-
   identity {
     type = "SystemAssigned"
   }
@@ -108,29 +107,29 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
     sku       = local.vm-image[var.hub-nva-image].sku
     version   = "latest"
   }
-  custom_data = base64encode(
-    templatefile("cloud-init/${var.hub-nva-image}.conf",
-      {
-        VAR-hub-external-subnet-gateway          = var.hub-external-subnet-gateway
-        VAR-spoke-check-internet-up-ip           = var.spoke-check-internet-up-ip
-        VAR-spoke-default-gateway                = cidrhost(var.hub-internal-subnet_prefix, 1)
-        VAR-spoke-virtual-network_address_prefix = var.spoke-virtual-network_address_prefix
-        VAR-spoke-virtual-network_subnet         = cidrhost(var.spoke-virtual-network_address_prefix, 0)
-        VAR-spoke-virtual-network_netmask        = cidrnetmask(var.spoke-virtual-network_address_prefix)
-        VAR-spoke-aks-node-ip                    = var.spoke-aks-node-ip
-        VAR-hub-nva-vip-docs                     = var.hub-nva-vip-docs
-        VAR-hub-nva-vip-ollama                   = var.hub-nva-vip-ollama
-        VAR-hub-nva-vip-video                    = var.hub-nva-vip-video
-        VAR-hub-nva-vip-dvwa                     = var.hub-nva-vip-dvwa
-        VAR-HUB_NVA_USERNAME                     = var.HUB_NVA_USERNAME
-        VAR-CERTIFICATE                          = tls_self_signed_cert.self_signed_cert.cert_pem
-        VAR-PRIVATEKEY                           = tls_private_key.private_key.private_key_pem
-        VAR-fwb_license_file                     = ""
-        VAR-fwb_license_fortiflex                = ""
-        VAR-spoke-aks-network                    = var.spoke-aks-subnet_prefix
-      }
-    )
-  )
+#  custom_data = base64encode(
+#    templatefile("cloud-init/${var.hub-nva-image}.conf",
+#      {
+#        VAR-hub-external-subnet-gateway          = var.hub-external-subnet-gateway
+#        VAR-spoke-check-internet-up-ip           = var.spoke-check-internet-up-ip
+#        VAR-spoke-default-gateway                = cidrhost(var.hub-internal-subnet_prefix, 1)
+#        VAR-spoke-virtual-network_address_prefix = var.spoke-virtual-network_address_prefix
+#        VAR-spoke-virtual-network_subnet         = cidrhost(var.spoke-virtual-network_address_prefix, 0)
+#        VAR-spoke-virtual-network_netmask        = cidrnetmask(var.spoke-virtual-network_address_prefix)
+#        VAR-spoke-aks-node-ip                    = var.spoke-aks-node-ip
+#        VAR-hub-nva-vip-docs                     = var.hub-nva-vip-docs
+#        VAR-hub-nva-vip-ollama                   = var.hub-nva-vip-ollama
+#        VAR-hub-nva-vip-video                    = var.hub-nva-vip-video
+#        VAR-hub-nva-vip-dvwa                     = var.hub-nva-vip-dvwa
+#        VAR-HUB_NVA_USERNAME                     = var.HUB_NVA_USERNAME
+#        VAR-CERTIFICATE                          = tls_self_signed_cert.self_signed_cert.cert_pem
+#        VAR-PRIVATEKEY                           = tls_private_key.private_key.private_key_pem
+#        VAR-fwb_license_file                     = ""
+#        VAR-fwb_license_fortiflex                = ""
+#        VAR-spoke-aks-network                    = var.spoke-aks-subnet_prefix
+#      }
+#    )
+#  )
 }
 
 resource "azurerm_managed_disk" "log_disk" {
@@ -142,9 +141,9 @@ resource "azurerm_managed_disk" "log_disk" {
   disk_size_gb         = var.PRODUCTION_ENVIRONMENT ? 128 : 36
 }
 
-resource "azurerm_virtual_machine_data_disk_attachment" "log_disk" {
-  managed_disk_id    = azurerm_managed_disk.log_disk.id
-  virtual_machine_id = azurerm_linux_virtual_machine.hub-nva_virtual_machine.id
-  lun                = "0"
-  caching            = "ReadWrite"
-}
+#resource "azurerm_virtual_machine_data_disk_attachment" "log_disk" {
+#  managed_disk_id    = azurerm_managed_disk.log_disk.id
+#  virtual_machine_id = azurerm_linux_virtual_machine.hub-nva_virtual_machine.id
+#  lun                = "0"
+#  caching            = "ReadWrite"
+#}
