@@ -11,7 +11,7 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
         private_ip_address_allocation = "Static"
         private_ip_address            = var.hub-nva-management-ip
         subnet_id                     = azurerm_subnet.hub-external_subnet.id
-        public_ip_address_id          = var.PRODUCTION_ENVIRONMENT ? null: azurerm_public_ip.hub-nva-management_public_ip[0].id
+        public_ip_address_id          = var.PRODUCTION_ENVIRONMENT ? null : azurerm_public_ip.hub-nva-management_public_ip[0].id
       },
       {
         name                          = "hub-nva-external-vip-docs_configuration"
@@ -95,7 +95,7 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = var.PRODUCTION_ENVIRONMENT ? "Premium_LRS" : "Standard_LRS"
-    disk_size_gb = var.PRODUCTION_ENVIRONMENT ? 256 : 128
+    disk_size_gb         = var.PRODUCTION_ENVIRONMENT ? 256 : 128
   }
   plan {
     name      = local.vm-image[var.hub-nva-image].sku
