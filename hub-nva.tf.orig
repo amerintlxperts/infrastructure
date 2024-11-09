@@ -58,19 +58,19 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
 #  }
 }
 
-#resource "azurerm_network_interface" "hub-nva-internal_network_interface" {
-#  name                           = "hub-nva-internal_network_interface"
-#  location                       = azurerm_resource_group.azure_resource_group.location
-#  resource_group_name            = azurerm_resource_group.azure_resource_group.name
-#  accelerated_networking_enabled = true
-#  ip_forwarding_enabled          = true #checkov:skip=CKV_AZURE_118:Fortigate NIC needs IP forwarding.
-#  ip_configuration {
-#    name                          = "hub-nva-internal_ip_configuration"
-#    private_ip_address_allocation = "Static"
-#    private_ip_address            = var.hub-nva-gateway
-#    subnet_id                     = azurerm_subnet.hub-internal_subnet.id
-#  }
-#}
+resource "azurerm_network_interface" "hub-nva-internal_network_interface" {
+  name                           = "hub-nva-internal_network_interface"
+  location                       = azurerm_resource_group.azure_resource_group.location
+  resource_group_name            = azurerm_resource_group.azure_resource_group.name
+  accelerated_networking_enabled = true
+  ip_forwarding_enabled          = true #checkov:skip=CKV_AZURE_118:Fortigate NIC needs IP forwarding.
+  ip_configuration {
+    name                          = "hub-nva-internal_ip_configuration"
+    private_ip_address_allocation = "Static"
+    private_ip_address            = var.hub-nva-gateway
+    subnet_id                     = azurerm_subnet.hub-internal_subnet.id
+  }
+}
 
 resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
   #checkov:skip=CKV_AZURE_178: Allow Fortigate to present HTTPS login UI instead of SSH
@@ -85,7 +85,7 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
   admin_password                  = var.HUB_NVA_PASSWORD
   location                        = azurerm_resource_group.azure_resource_group.location
   resource_group_name             = azurerm_resource_group.azure_resource_group.name
-  #network_interface_ids           = [azurerm_network_interface.hub-nva-external_network_interface.id, azurerm_network_interface.hub-nva-internal_network_interface.id]
+  network_interface_ids           = [azurerm_network_interface.hub-nva-external_network_interface.id, azurerm_network_interface.hub-nva-internal_network_interface.id]
   size                            = var.PRODUCTION_ENVIRONMENT ? local.vm-image[var.hub-nva-image].size : local.vm-image[var.hub-nva-image].size-dev
   allow_extension_operations      = false
 #  identity {
@@ -132,14 +132,14 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
 #  )
 }
 
-#resource "azurerm_managed_disk" "log_disk" {
-#  name                 = "hub-nva-log_disk"
-#  location             = azurerm_resource_group.azure_resource_group.location
-#  resource_group_name  = azurerm_resource_group.azure_resource_group.name
-#  storage_account_type = "Standard_LRS"
-#  create_option        = "Empty"
-#  disk_size_gb         = var.PRODUCTION_ENVIRONMENT ? 128 : 36
-#}
+resource "azurerm_managed_disk" "log_disk" {
+  name                 = "hub-nva-log_disk"
+  location             = azurerm_resource_group.azure_resource_group.location
+  resource_group_name  = azurerm_resource_group.azure_resource_group.name
+  storage_account_type = "Standard_LRS"
+  create_option        = "Empty"
+  disk_size_gb         = var.PRODUCTION_ENVIRONMENT ? 128 : 36
+}
 
 #resource "azurerm_virtual_machine_data_disk_attachment" "log_disk" {
 #  managed_disk_id    = azurerm_managed_disk.log_disk.id
