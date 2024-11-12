@@ -46,7 +46,7 @@ jobs:
     needs: [terraform]
     if: needs.terraform.outputs.action == 'apply'
     name: Terraform Plan
-    runs-on: self-hosted
+    -on: self-hosted
     env:
       ARM_SKIP_PROVIDER_REGISTRATION: true
     outputs:
@@ -162,7 +162,7 @@ jobs:
   apply:
     name: Terraform Apply
     if: needs.terraform.outputs.action == 'apply'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [terraform, plan]
     steps:
       - name: Github repository checkout
