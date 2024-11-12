@@ -46,7 +46,7 @@ jobs:
     needs: [terraform]
     if: needs.terraform.outputs.action == 'apply'
     name: Terraform Plan
-    -on: self-hosted
+    runs-on: self-hosted
     env:
       ARM_SKIP_PROVIDER_REGISTRATION: true
     outputs:
