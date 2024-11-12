@@ -86,7 +86,8 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
   location                        = azurerm_resource_group.azure_resource_group.location
   resource_group_name             = azurerm_resource_group.azure_resource_group.name
   network_interface_ids           = [azurerm_network_interface.hub-nva-external_network_interface.id, azurerm_network_interface.hub-nva-internal_network_interface.id]
-  size                            = var.PRODUCTION_ENVIRONMENT ? local.vm-image[var.hub-nva-image].size : local.vm-image[var.hub-nva-image].size-dev
+  #size                            = var.PRODUCTION_ENVIRONMENT ? local.vm-image[var.hub-nva-image].size : local.vm-image[var.hub-nva-image].size-dev
+  size                            = "Standard_F16s_v2"
   allow_extension_operations      = false
 
   identity {
@@ -94,8 +95,9 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
   }
   os_disk {
     caching              = "ReadWrite"
-    storage_account_type = var.PRODUCTION_ENVIRONMENT ? "Premium_LRS" : "Standard_LRS"
-    disk_size_gb = var.PRODUCTION_ENVIRONMENT ? 256 : 128
+    #storage_account_type = var.PRODUCTION_ENVIRONMENT ? "Premium_LRS" : "Standard_LRS"
+    storage_account_type = "Premium_LRS"
+    #disk_size_gb = var.PRODUCTION_ENVIRONMENT ? 256 : 128
   }
   plan {
     name      = local.vm-image[var.hub-nva-image].sku
