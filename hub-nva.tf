@@ -94,8 +94,7 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
   }
   os_disk {
     caching              = "ReadWrite"
-    #storage_account_type = var.PRODUCTION_ENVIRONMENT ? "Premium_LRS" : "Standard_LRS"
-    storage_account_type = "Premium_LRS"
+    storage_account_type = var.PRODUCTION_ENVIRONMENT ? "Premium_LRS" : "Standard_LRS"
     #disk_size_gb = var.PRODUCTION_ENVIRONMENT ? 256 : 128
   }
   plan {
