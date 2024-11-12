@@ -21,7 +21,7 @@ concurrency:
 jobs:
   terraform:
     name: Terraform Init
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       action: ${{ steps.terraform.outputs.action }}
     steps:
