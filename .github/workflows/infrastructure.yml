@@ -77,43 +77,6 @@ jobs:
           TF_CLI_ARGS_init: -backend-config="storage_account_name=${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ secrets.TFSTATE_CONTAINER_NAME }}" -backend-config="resource_group_name=${{ secrets.AZURE_TFSTATE_RESOURCE_GROUP_NAME }}" -backend-config="key=${{ github.ref_name }}" -input=false
         run: terraform init
 
-      - name: terraform refresh
-        id: tf-refresh
-        env:
-          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-          TF_VAR_PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
-          TF_VAR_LOCATION: ${{ secrets.LOCATION }}
-          TF_VAR_GITHUB_TOKEN: ${{ secrets.PAT }}
-          TF_VAR_GITHUB_ORG: ${{ secrets.ORG }}
-          TF_VAR_DOCS_BUILDER_REPO_NAME: ${{ secrets.DOCS_BUILDER_REPO_NAME }}
-          TF_VAR_MANIFESTS_INFRASTRUCTURE_SSH_PRIVATE_KEY: ${{ secrets.MANIFESTS_INFRASTRUCTURE_SSH_PRIVATE_KEY }}
-          TF_VAR_MANIFESTS_INFRASTRUCTURE_REPO_NAME: ${{ secrets.MANIFESTS_INFRASTRUCTURE_REPO_NAME }}
-          TF_VAR_MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY: ${{ secrets.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY }}
-          TF_VAR_MANIFESTS_APPLICATIONS_REPO_NAME: ${{ secrets.MANIFESTS_APPLICATIONS_REPO_NAME }}
-          TF_VAR_HUB_NVA_PASSWORD: ${{ secrets.HUB_NVA_PASSWORD }}
-          TF_VAR_HUB_NVA_USERNAME: ${{ secrets.HUB_NVA_USERNAME }}
-          TF_VAR_LW_AGENT_TOKEN: ${{ secrets.LW_AGENT_TOKEN }}
-          TF_VAR_PRODUCTION_ENVIRONMENT: ${{ vars.PRODUCTION_ENVIRONMENT }}
-          TF_VAR_GPU_NODE_POOL: ${{ vars.GPU_NODE_POOL }}
-          TF_VAR_APPLICATION_DOCS: ${{ vars.APPLICATION_DOCS }}
-          TF_VAR_APPLICATION_OLLAMA: ${{ vars.APPLICATION_OLLAMA }}
-          TF_VAR_APPLICATION_DVWA: ${{ vars.APPLICATION_DVWA }}
-          TF_VAR_APPLICATION_VIDEO: ${{ vars.APPLICATION_VIDEO }}
-          TF_IN_AUTOMATION: true
-        run: |
-          export exitcode=0
-          terraform refresh || export exitcode=$?
-          echo "exitcode=$exitcode" >> "$GITHUB_OUTPUT"
-          if [ $exitcode -eq 1 ]; then
-            echo Terraform Refresh Failed!
-            exit 1
-          else
-            exit 0
-          fi
-
       - name: terraform plan
         id: tf-plan
         env:
