@@ -163,21 +163,3 @@ resource "azurerm_subnet_network_security_group_association" "hub-internal-subne
   subnet_id                 = azurerm_subnet.hub-internal_subnet.id
   network_security_group_id = azurerm_network_security_group.hub-internal_network_security_group.id
 }
-
-resource "azurerm_public_ip" "hub-nva-management_public_ip" {
-  count               = var.PRODUCTION_ENVIRONMENT ? 0 : 1
-  name                = "hub-nva-management_public_ip"
-  location            = azurerm_resource_group.azure_resource_group.location
-  resource_group_name = azurerm_resource_group.azure_resource_group.name
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-management"
-}
-
-resource "azurerm_availability_set" "hub-nva_availability_set" {
-  location                     = azurerm_resource_group.azure_resource_group.location
-  resource_group_name          = azurerm_resource_group.azure_resource_group.name
-  name                         = "hub-nva_availability_set"
-  platform_fault_domain_count  = 2
-  platform_update_domain_count = 2
-}

@@ -8,6 +8,14 @@ resource "azurerm_public_ip" "hub-nva-management_public_ip" {
   domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-management"
 }
 
+resource "azurerm_availability_set" "hub-nva_availability_set" {
+  location                     = azurerm_resource_group.azure_resource_group.location
+  resource_group_name          = azurerm_resource_group.azure_resource_group.name
+  name                         = "hub-nva_availability_set"
+  platform_fault_domain_count  = 2
+  platform_update_domain_count = 2
+}
+
 resource "azurerm_network_interface" "hub-nva-external_network_interface" {
   name                           = "hub-nva-external_network_interface"
   location                       = azurerm_resource_group.azure_resource_group.location
