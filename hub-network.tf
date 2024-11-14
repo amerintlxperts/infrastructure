@@ -174,46 +174,6 @@ resource "azurerm_public_ip" "hub-nva-management_public_ip" {
   domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-management"
 }
 
-resource "azurerm_public_ip" "hub-nva-vip_ollama_public_ip" {
-  count               = var.APPLICATION_OLLAMA ? 1 : 0
-  name                = "hub-nva-vip_ollama_public_ip"
-  location            = azurerm_resource_group.azure_resource_group.location
-  resource_group_name = azurerm_resource_group.azure_resource_group.name
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-ollama"
-}
-
-resource "azurerm_public_ip" "hub-nva-vip_dvwa_public_ip" {
-  count               = var.APPLICATION_DVWA ? 1 : 0
-  name                = "hub-nva-vip_dvwa_public_ip"
-  location            = azurerm_resource_group.azure_resource_group.location
-  resource_group_name = azurerm_resource_group.azure_resource_group.name
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-dvwa"
-}
-
-resource "azurerm_public_ip" "hub-nva-vip_video_public_ip" {
-  count               = var.APPLICATION_VIDEO ? 1 : 0
-  name                = "hub-nva-vip_video_public_ip"
-  location            = azurerm_resource_group.azure_resource_group.location
-  resource_group_name = azurerm_resource_group.azure_resource_group.name
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-video"
-}
-
-resource "azurerm_public_ip" "hub-nva-vip_docs_public_ip" {
-  count               = var.APPLICATION_DOCS ? 1 : 0
-  name                = "hub-nva-vip_docs_public_ip"
-  location            = azurerm_resource_group.azure_resource_group.location
-  resource_group_name = azurerm_resource_group.azure_resource_group.name
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-docs"
-}
-
 resource "azurerm_availability_set" "hub-nva_availability_set" {
   location                     = azurerm_resource_group.azure_resource_group.location
   resource_group_name          = azurerm_resource_group.azure_resource_group.name
