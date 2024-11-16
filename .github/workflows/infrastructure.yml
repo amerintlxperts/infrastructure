@@ -102,6 +102,9 @@ jobs:
           TF_VAR_APPLICATION_OLLAMA: ${{ vars.APPLICATION_OLLAMA }}
           TF_VAR_APPLICATION_DVWA: ${{ vars.APPLICATION_DVWA }}
           TF_VAR_APPLICATION_VIDEO: ${{ vars.APPLICATION_VIDEO }}
+          TF_VAR_MANAGEMENT_ACCESS: ${{ vars.MANAGEMENT_ACCESS }}
+          TF_VAR_HTUSERNAME: ${{ secrets.HTUSERNAME }}
+          TF_VAR_HTPASSWD: ${{ secrets.HTPASSWD }}
           TF_IN_AUTOMATION: true
         run: |
           export exitcode=0
@@ -220,6 +223,9 @@ jobs:
           TF_VAR_APPLICATION_OLLAMA: ${{ vars.APPLICATION_OLLAMA }}
           TF_VAR_APPLICATION_DVWA: ${{ vars.APPLICATION_DVWA }}
           TF_VAR_APPLICATION_VIDEO: ${{ vars.APPLICATION_VIDEO }}
+          TF_VAR_MANAGEMENT_ACCESS: ${{ vars.MANAGEMENT_ACCESS }}
+          TF_VAR_HTUSERNAME: ${{ secrets.HTUSERNAME }}
+          TF_VAR_HTPASSWD: ${{ secrets.HTPASSWD }}
           TF_IN_AUTOMATION: true
           GH_TOKEN: ${{ secrets.PAT }}
         run: terraform apply -auto-approve tfplan
@@ -279,6 +285,9 @@ jobs:
           TF_VAR_APPLICATION_OLLAMA: ${{ vars.APPLICATION_OLLAMA }}
           TF_VAR_APPLICATION_DVWA: ${{ vars.APPLICATION_DVWA }}
           TF_VAR_APPLICATION_VIDEO: ${{ vars.APPLICATION_VIDEO }}
+          TF_VAR_MANAGEMENT_ACCESS: ${{ vars.MANAGEMENT_ACCESS }}
+          TF_VAR_HTUSERNAME: ${{ secrets.HTUSERNAME }}
+          TF_VAR_HTPASSWD: ${{ secrets.HTPASSWD }}
           TF_IN_AUTOMATION: true
         run: |
           terraform destroy -auto-approve

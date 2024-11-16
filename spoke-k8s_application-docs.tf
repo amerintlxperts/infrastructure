@@ -27,6 +27,22 @@ resource "kubernetes_namespace" "docs" {
   }
 }
 
+locals {
+  htpasswd_content = "${var.USERNAME}:${chomp(base64encode(var.HTPASSWD))}"
+}
+
+resource "kubernetes_secret" "htpasswd_secret" {
+  count = var.APPLICATION_DOCS ? 1 : 0
+  metadata {
+    name = "htpasswd-secret"
+    namespace = kubernetes_namespace.docs[0].metadata[0].name
+  }
+  data = {
+    htpasswd = local.htpasswd_content
+  }
+  type = "Opaque"
+}
+
 resource "kubernetes_secret" "docs_fortiweb_login_secret" {
   count = var.APPLICATION_DOCS ? 1 : 0
   metadata {
