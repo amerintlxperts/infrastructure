@@ -31,7 +31,7 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
           private_ip_address_allocation = "Static"
           private_ip_address            = var.hub-nva-management-ip
           subnet_id                     = azurerm_subnet.hub-external_subnet.id
-          public_ip_address_id          = var.PRODUCTION_ENVIRONMENT ? null : azurerm_public_ip.hub-nva-management_public_ip[0].id
+          public_ip_address_id          = var.PRODUCTION_ENVIRONMENT ? null : (length(azurerm_public_ip.hub-nva-management_public_ip) > 0 ? azurerm_public_ip.hub-nva-management_public_ip[0].id : null)
           condition                     = true
         },
         {
@@ -40,7 +40,7 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
           private_ip_address_allocation = "Static"
           private_ip_address            = var.hub-nva-vip-docs
           subnet_id                     = azurerm_subnet.hub-external_subnet.id
-          public_ip_address_id          = azurerm_public_ip.hub-nva-vip_docs_public_ip[0].id
+          public_ip_address_id          = length(azurerm_public_ip.hub-nva-vip_docs_public_ip) > 0 ? azurerm_public_ip.hub-nva-vip_docs_public_ip[0].id : null
           condition                     = var.APPLICATION_DOCS
         },
         {
@@ -49,7 +49,7 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
           private_ip_address_allocation = "Static"
           private_ip_address            = var.hub-nva-vip-dvwa
           subnet_id                     = azurerm_subnet.hub-external_subnet.id
-          public_ip_address_id          = azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].id
+          public_ip_address_id          = length(azurerm_public_ip.hub-nva-vip_dvwa_public_ip) > 0 ? azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].id : null
           condition                     = var.APPLICATION_DVWA
         },
         {
@@ -58,7 +58,7 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
           private_ip_address_allocation = "Static"
           private_ip_address            = var.hub-nva-vip-ollama
           subnet_id                     = azurerm_subnet.hub-external_subnet.id
-          public_ip_address_id          = azurerm_public_ip.hub-nva-vip_ollama_public_ip[0].id
+          public_ip_address_id          = length(azurerm_public_ip.hub-nva-vip_ollama_public_ip) > 0 ? azurerm_public_ip.hub-nva-vip_ollama_public_ip[0].id : null
           condition                     = var.APPLICATION_OLLAMA
         },
         {
@@ -67,7 +67,7 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
           private_ip_address_allocation = "Static"
           private_ip_address            = var.hub-nva-vip-video
           subnet_id                     = azurerm_subnet.hub-external_subnet.id
-          public_ip_address_id          = azurerm_public_ip.hub-nva-vip_video_public_ip[0].id
+          public_ip_address_id          = length(azurerm_public_ip.hub-nva-vip_video_public_ip) > 0 ? azurerm_public_ip.hub-nva-vip_video_public_ip[0].id : null
           condition                     = var.APPLICATION_VIDEO
         }
       ] : ip if ip.condition
