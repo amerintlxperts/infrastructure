@@ -21,6 +21,7 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
   location                       = azurerm_resource_group.azure_resource_group.location
   resource_group_name            = azurerm_resource_group.azure_resource_group.name
   accelerated_networking_enabled = true
+
   dynamic "ip_configuration" {
     for_each = [
       {
@@ -30,6 +31,7 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
         private_ip_address            = var.hub-nva-management-ip
         subnet_id                     = azurerm_subnet.hub-external_subnet.id
         public_ip_address_id          = var.PRODUCTION_ENVIRONMENT ? null : azurerm_public_ip.hub-nva-management_public_ip[0].id
+        condition                     = true
       },
       {
         name                          = "hub-nva-external-vip-docs_configuration"
@@ -38,6 +40,7 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
         private_ip_address            = var.hub-nva-vip-docs
         subnet_id                     = azurerm_subnet.hub-external_subnet.id
         public_ip_address_id          = azurerm_public_ip.hub-nva-vip_docs_public_ip[0].id
+        condition                     = var.APPLICATION_DOCS
       },
       {
         name                          = "hub-nva-external-vip-dvwa_configuration"
@@ -46,6 +49,7 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
         private_ip_address            = var.hub-nva-vip-dvwa
         subnet_id                     = azurerm_subnet.hub-external_subnet.id
         public_ip_address_id          = azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].id
+        condition                     = var.APPLICATION_DVWA
       },
       {
         name                          = "hub-nva-external-vip-ollama_configuration"
@@ -54,6 +58,7 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
         private_ip_address            = var.hub-nva-vip-ollama
         subnet_id                     = azurerm_subnet.hub-external_subnet.id
         public_ip_address_id          = azurerm_public_ip.hub-nva-vip_ollama_public_ip[0].id
+        condition                     = var.APPLICATION_OLLAMA
       },
       {
         name                          = "hub-nva-external-vip-video_configuration"
@@ -62,8 +67,11 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
         private_ip_address            = var.hub-nva-vip-video
         subnet_id                     = azurerm_subnet.hub-external_subnet.id
         public_ip_address_id          = azurerm_public_ip.hub-nva-vip_video_public_ip[0].id
+        condition                     = var.APPLICATION_VIDEO
       }
     ]
+    
+    for_each = [for ip in ip_configuration_list : ip if ip.condition]
 
     content {
       name                          = ip_configuration.value.name
