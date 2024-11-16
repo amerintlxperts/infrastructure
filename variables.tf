@@ -8,6 +8,16 @@ variable "APPLICATION_DOCS" {
   default     = "true"
 }
 
+variable "HTUSERNAME" {
+  description = "Username for Docs"
+  type = string
+}
+
+variable "HTPASSWD" {
+  description = "Password for Docs"
+  type = string
+}
+
 variable "APPLICATION_VIDEO" {
   description = "Deploy Docs Application"
   type        = bool
