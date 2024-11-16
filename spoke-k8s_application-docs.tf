@@ -28,7 +28,7 @@ resource "kubernetes_namespace" "docs" {
 }
 
 locals {
-  htpasswd_content = "${var.USERNAME}:${chomp(base64encode(var.HTPASSWD))}"
+  htpasswd_content = "${var.HTUSERNAME}:${chomp(base64encode(var.HTPASSWD))}"
 }
 
 resource "kubernetes_secret" "htpasswd_secret" {
