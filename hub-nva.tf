@@ -1,5 +1,5 @@
 resource "azurerm_public_ip" "hub-nva-management_public_ip" {
-  count = var.MANAGEMENT_ACCESS == "Allow" ? 1 : 0
+  count               = var.MANAGEMENT_ACCESS == "Allow" ? 1 : 0
   name                = "hub-nva-management_public_ip"
   location            = azurerm_resource_group.azure_resource_group.location
   resource_group_name = azurerm_resource_group.azure_resource_group.name
