@@ -112,6 +112,6 @@ resource "null_resource" "trigger_docs_builder_workflow" {
 
   # Run the provisioner only after both secrets have been created
   provisioner "local-exec" {
-    command = "gh workflow run docs-builder --repo ${var.GITHUB_ORG}/${var.DOCS_BUILDER_REPO_NAME} --ref main"
+    command = "gh workflow run docs-builder --repo ${var.DOCS_BUILDER_REPO_NAME} --ref main"
   }
 }
