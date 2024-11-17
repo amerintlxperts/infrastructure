@@ -10,12 +10,12 @@ variable "APPLICATION_DOCS" {
 
 variable "HTUSERNAME" {
   description = "Username for Docs"
-  type = string
+  type        = string
 }
 
 variable "HTPASSWD" {
   description = "Password for Docs"
-  type = string
+  type        = string
 }
 
 variable "APPLICATION_VIDEO" {
