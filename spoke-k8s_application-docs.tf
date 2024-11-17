@@ -57,7 +57,7 @@ resource "kubernetes_secret" "docs_fortiweb_login_secret" {
 }
 
 locals {
-  docs_manifest_repo_fqdn = "git@github.com:${var.MANIFESTS_APPLICATIONS_REPO_NAME}.git"
+  docs_manifest_repo_fqdn = "git@github.com:${var.GITHUB_ORG}/${var.MANIFESTS_APPLICATIONS_REPO_NAME}.git"
 }
 
 resource "azurerm_kubernetes_flux_configuration" "docs" {
@@ -111,6 +111,6 @@ resource "null_resource" "trigger_docs_builder_workflow" {
 
   # Run the provisioner only after both secrets have been created
   provisioner "local-exec" {
-    command = "gh workflow run docs-builder --repo ${var.ORG}/${var.DOCS_BUILDER_REPO_NAME} --ref main"
+    command = "gh workflow run docs-builder --repo ${var.GITHUB_ORG}/${var.DOCS_BUILDER_REPO_NAME} --ref main"
   }
 }
