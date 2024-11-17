@@ -41,7 +41,7 @@ resource "kubernetes_secret" "ollama_fortiweb_login_secret" {
 }
 
 locals {
-  ollama_manifest_repo_fqdn = "git@github.com:${var.MANIFESTS_APPLICATIONS_REPO_NAME}.git"
+  ollama_manifest_repo_fqdn = "git@github.com:${var.GITHUB_ORG}/${var.MANIFESTS_APPLICATIONS_REPO_NAME}.git"
 }
 
 resource "azurerm_kubernetes_flux_configuration" "ollama" {
