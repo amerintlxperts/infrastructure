@@ -57,7 +57,7 @@ resource "kubernetes_secret" "docs_fortiweb_login_secret" {
 }
 
 locals {
-  docs_manifest_repo_fqdn = "git@github.com:${var.MANIFESTS_APPLICATIONS_REPO_NAME}.git"
+  docs_manifest_repo_fqdn = "git@github.com:${var.GITHUB_ORG}/${var.MANIFESTS_APPLICATIONS_REPO_NAME}.git"
 }
 
 resource "azurerm_kubernetes_flux_configuration" "docs" {
@@ -97,8 +97,7 @@ resource "github_actions_secret" "DOCS_FQDN" {
   count           = var.APPLICATION_DOCS ? 1 : 0
   repository      = var.MANIFESTS_APPLICATIONS_REPO_NAME
   secret_name     = "DOCS_FQDN"
-  #plaintext_value = data.azurerm_public_ip.hub-nva-vip_docs_public_ip[0].fqdn
-  plaintext_value = "foo"
+  plaintext_value = data.azurerm_public_ip.hub-nva-vip_docs_public_ip[0].fqdn
 }
 
 resource "null_resource" "trigger_docs_builder_workflow" {

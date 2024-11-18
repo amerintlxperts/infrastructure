@@ -41,7 +41,7 @@ resource "kubernetes_secret" "dvwa_fortiweb_login_secret" {
 }
 
 locals {
-  dvwa_manifest_repo_fqdn = "git@github.com:${var.MANIFESTS_APPLICATIONS_REPO_NAME}.git"
+  dvwa_manifest_repo_fqdn = "git@github.com:${var.GITHUB_ORG}/${var.MANIFESTS_APPLICATIONS_REPO_NAME}.git"
 }
 
 resource "azurerm_kubernetes_flux_configuration" "dvwa" {
