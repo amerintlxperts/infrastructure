@@ -28,11 +28,12 @@ resource "kubernetes_namespace" "docs" {
 }
 
 locals {
-  htpasswd_content = "${var.HTUSERNAME}:${chomp(base64encode(var.HTPASSWD))}"
+  htpasswd_content = "${var.HTUSERNAME}:${bcrypt(var.HTPASSWD)}"
 }
 
 resource "kubernetes_secret" "htpasswd_secret" {
-  count = var.APPLICATION_DOCS ? 1 : 0
+  count       = var.APPLICATION_DOCS ? 1 : 0
+  secret_name = "htpasswd-secret"
   metadata {
     name      = "htpasswd-secret"
     namespace = kubernetes_namespace.docs[0].metadata[0].name
