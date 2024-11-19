@@ -30,7 +30,7 @@ resource "kubernetes_namespace" "docs" {
 resource "random_password" "salt" {
   length           = 8
   special          = true
-  special_override = "!@#%&*()-_=+[]{}<>:?"
+  override_special = "!@#%&*()-_=+[]{}<>:?"
 }
 
 resource "htpasswd_password" "hash" {
