@@ -27,8 +27,15 @@ resource "kubernetes_namespace" "docs" {
   }
 }
 
-locals {
-  htpasswd_content = "${var.HTUSERNAME}:${bcrypt(var.HTPASSWD)}"
+resource "random_password" "salt" {
+  length           = 8
+  special          = true
+  special_override = "!@#%&*()-_=+[]{}<>:?"
+}
+
+resource "htpasswd_password" "hash" {
+  password = var.HTPASSWD
+  salt     = random_password.salt.result
 }
 
 resource "kubernetes_secret" "htpasswd_secret" {
@@ -38,7 +45,7 @@ resource "kubernetes_secret" "htpasswd_secret" {
     namespace = kubernetes_namespace.docs[0].metadata[0].name
   }
   data = {
-    htpasswd = local.htpasswd_content
+    htpasswd = "${var.HTUSERNAME}:${htpasswd_password.hash.apr1}"
   }
   type = "Opaque"
 }
