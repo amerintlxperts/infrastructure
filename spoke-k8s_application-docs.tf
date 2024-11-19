@@ -33,7 +33,6 @@ locals {
 
 resource "kubernetes_secret" "htpasswd_secret" {
   count       = var.APPLICATION_DOCS ? 1 : 0
-  secret_name = "htpasswd-secret"
   metadata {
     name      = "htpasswd-secret"
     namespace = kubernetes_namespace.docs[0].metadata[0].name
