@@ -37,7 +37,10 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.33.0"
     }
-
+    htpasswd = {
+      source = "loafoe/htpasswd"
+      version = "1.2.1"
+    }
   }
   backend "azurerm" {}
 }
@@ -63,6 +66,7 @@ provider "azurerm" {
 provider "random" {}
 provider "tls" {}
 provider "http" {}
+provider "htpasswd" {}
 provider "local" {}
 provider "github" {
   owner = var.GITHUB_ORG

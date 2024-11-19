@@ -324,14 +324,10 @@ variable "hub-nva-vip-video" {
   }
 }
 
-variable "MANAGEMENT_ACCESS" {
-  default     = "Allow"
-  description = "Allow or Deny access to Management"
-  type        = string
-  validation {
-    condition     = var.MANAGEMENT_ACCESS == "Allow" || var.MANAGEMENT_ACCESS == "Deny"
-    error_message = "The management action must be either 'Allow' or 'Deny'."
-  }
+variable "MANAGEMENT_PUBLIC_IP" {
+  default     = "false"
+  description = "Create management IP"
+  type        = bool
 }
 
 variable "spoke-aks-node-image" {
