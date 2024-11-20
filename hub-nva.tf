@@ -102,7 +102,8 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
   #checkov:skip=CKV_AZURE_178: Allow Fortigate to present HTTPS login UI instead of SSH
   #checkov:skip=CKV_AZURE_149: Allow Fortigate to present HTTPS login UI instead of SSH
   #checkov:skip=CKV_AZURE_1: Allow Fortigate to present HTTPS login UI instead of SSH
-  depends_on                      = [null_resource.marketplace_agreement, azurerm_managed_disk.log_disk]
+  #depends_on                      = [null_resource.marketplace_agreement, azurerm_managed_disk.log_disk]
+  depends_on                      = [null_resource.marketplace_agreement]
   name                            = "hub-nva_virtual_machine"
   computer_name                   = "hub-nva"
   availability_set_id             = azurerm_availability_set.hub-nva_availability_set.id
@@ -159,18 +160,18 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
   )
 }
 
-resource "azurerm_managed_disk" "log_disk" {
-  name                 = "hub-nva-log_disk"
-  location             = azurerm_resource_group.azure_resource_group.location
-  resource_group_name  = azurerm_resource_group.azure_resource_group.name
-  storage_account_type = "Standard_LRS"
-  create_option        = "Empty"
-  disk_size_gb         = var.PRODUCTION_ENVIRONMENT ? 128 : 36
-}
+#resource "azurerm_managed_disk" "log_disk" {
+#  name                 = "hub-nva-log_disk"
+#  location             = azurerm_resource_group.azure_resource_group.location
+#  resource_group_name  = azurerm_resource_group.azure_resource_group.name
+#  storage_account_type = "Standard_LRS"
+#  create_option        = "Empty"
+#  disk_size_gb         = var.PRODUCTION_ENVIRONMENT ? 128 : 36
+#}
 
-resource "azurerm_virtual_machine_data_disk_attachment" "log_disk" {
-  managed_disk_id    = azurerm_managed_disk.log_disk.id
-  virtual_machine_id = azurerm_linux_virtual_machine.hub-nva_virtual_machine.id
-  lun                = "0"
-  caching            = "ReadWrite"
-}
+#resource "azurerm_virtual_machine_data_disk_attachment" "log_disk" {
+#  managed_disk_id    = azurerm_managed_disk.log_disk.id
+#  virtual_machine_id = azurerm_linux_virtual_machine.hub-nva_virtual_machine.id
+#  lun                = "0"
+#  caching            = "ReadWrite"
+#}
