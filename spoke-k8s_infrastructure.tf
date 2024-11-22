@@ -74,6 +74,14 @@ resource "azurerm_kubernetes_flux_configuration" "infrastructure" {
     garbage_collection_enabled = true
     sync_interval_in_seconds   = 60
   }
+  kustomizations {
+    name                       = "cert-manager-ClusterIssuer"
+    recreating_enabled         = true
+    garbage_collection_enabled = true
+    sync_interval_in_seconds   = 60
+    path                       = "./cert-manager-ClusterIssuer"
+    depends_on                 = ["infrastructure"]
+  }
   depends_on = [
     azurerm_kubernetes_cluster_extension.flux_extension
   ]
