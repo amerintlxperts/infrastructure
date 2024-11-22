@@ -10,7 +10,7 @@ resource "azurerm_dns_cname_record" "docs" {
   zone_name           = azurerm_dns_zone.dns_zone.name
   resource_group_name = azurerm_resource_group.azure_resource_group.name
   ttl                 = 300
-  record              = data.azurerm_public_ip.hub-nva-vip_docs_public_ip.fqdn
+  record              = data.azurerm_public_ip.hub-nva-vip_docs_public_ip[0].fqdn
 }
 
 resource "azurerm_public_ip" "hub-nva-vip_docs_public_ip" {
