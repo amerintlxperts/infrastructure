@@ -79,7 +79,7 @@ resource "azurerm_kubernetes_flux_configuration" "infrastructure" {
     recreating_enabled         = true
     garbage_collection_enabled = true
     sync_interval_in_seconds   = 60
-    path                       = "./cert-manager-ClusterIssuer"
+    path                       = "./cert-manager-clusterissuer"
     depends_on                 = ["infrastructure"]
   }
   depends_on = [
