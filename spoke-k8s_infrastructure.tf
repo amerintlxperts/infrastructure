@@ -75,7 +75,7 @@ resource "azurerm_kubernetes_flux_configuration" "infrastructure" {
     sync_interval_in_seconds   = 60
   }
   kustomizations {
-    name                       = "cert-manager-ClusterIssuer"
+    name                       = "cert-manager-clusterissuer"
     recreating_enabled         = true
     garbage_collection_enabled = true
     sync_interval_in_seconds   = 60
