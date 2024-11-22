@@ -84,7 +84,7 @@ resource "azurerm_role_assignment" "dns_zone_contributor" {
 resource "azurerm_federated_identity_credential" "cert_manager" {
   name                = "cert-manager"
   audience            = ["api://AzureADTokenExchange"]
-  issuer              = azurerm_kubernetes_service.kubernetes_cluster.oidc_issuer_url
+  issuer              = azurerm_kubernetes_cluster.kubernetes_cluster.oidc_issuer_url
   #user_assigned_identity_id = azurerm_user_assigned_identity.my_identity.id
   parent_id           = azurerm_user_assigned_identity.my_identity.id
   subject             = "system:serviceaccount:cert-manager:cert-manager"
