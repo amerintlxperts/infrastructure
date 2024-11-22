@@ -30,7 +30,7 @@ resource "kubernetes_namespace" "docs" {
 resource "kubernetes_secret" "godaddy-api-key" {
   metadata {
     name      = "godaddy-api-key"
-    namespace = kubernetes_namespace.docs[0].metadata[0].name
+    namespace = "cert-manager"
   }
   type = "Opaque"
   data = {
