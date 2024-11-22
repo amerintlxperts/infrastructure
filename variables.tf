@@ -8,13 +8,9 @@ variable "APPLICATION_DOCS" {
   default     = "true"
 }
 
-variable "GODADDY_API_KEY" {
-  description = "GODADDY API KEY"
-  type = string
-}
-
-variable "GODADDY_SECRET_KEY" {
-  description = "GODADDY SECRET KEY"
+variable "DNS_ZONE" {
+  description = "DNS Zone"
+  default = "example.com"
   type = string
 }
 
