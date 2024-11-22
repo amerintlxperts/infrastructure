@@ -8,6 +8,16 @@ variable "APPLICATION_DOCS" {
   default     = "true"
 }
 
+variable "GODADDY_API_KEY" {
+  description = "GODADDY API KEY"
+  type = string
+}
+
+variable "GODADDY_SECRET_KEY" {
+  description = "GODADDY SECRET KEY"
+  type = string
+}
+
 variable "HTUSERNAME" {
   description = "Username for Docs"
   type        = string
