@@ -75,22 +75,6 @@ resource "azurerm_role_assignment" "acr_role_assignment" {
   skip_service_principal_aad_check = true
 }
 
-resource "azurerm_role_assignment" "dns_zone_contributor" {
-  principal_id   = azurerm_user_assigned_identity.my_identity.principal_id
-  role_definition_name = "DNS Zone Contributor"
-  scope          = azurerm_dns_zone.dns_zone.id
-}
-
-resource "azurerm_federated_identity_credential" "cert_manager" {
-  name                = "cert-manager"
-  resource_group_name = azurerm_resource_group.azure_resource_group.name
-  audience            = ["api://AzureADTokenExchange"]
-  issuer              = azurerm_kubernetes_cluster.kubernetes_cluster.oidc_issuer_url
-  #user_assigned_identity_id = azurerm_user_assigned_identity.my_identity.id
-  parent_id           = azurerm_user_assigned_identity.my_identity.id
-  subject             = "system:serviceaccount:cert-manager:cert-manager"
-}
-
 locals {
   cluster_name        = substr("${azurerm_resource_group.azure_resource_group.name}_k8s-cluster_${var.LOCATION}", 0, 63)
   node_resource_group = substr("${azurerm_resource_group.azure_resource_group.name}_k8s-cluster_${var.LOCATION}_MC", 0, 80)
