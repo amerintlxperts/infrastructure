@@ -1,3 +1,8 @@
+esource "azurerm_dns_zone" "dns_zone" {
+  name                = var.DNS_ZONE
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+}
+
 resource "azurerm_virtual_network" "hub_virtual_network" {
   name                = "hub_virtual_network"
   address_space       = [var.hub-virtual-network_address_prefix]
