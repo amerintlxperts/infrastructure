@@ -136,6 +136,8 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
     #type         = "UserAssigned"
     #identity_ids = [azurerm_user_assigned_identity.my_identity.id]
   }
+  oidc_issuer_enabled       = true
+  workload_identity_enabled = true
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "node-pool" {
