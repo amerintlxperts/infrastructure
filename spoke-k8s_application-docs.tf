@@ -4,6 +4,15 @@ data "azurerm_public_ip" "hub-nva-vip_docs_public_ip" {
   resource_group_name = azurerm_resource_group.azure_resource_group.name
 }
 
+resource "azurerm_dns_cname_record" "docs" {
+  count               = var.APPLICATION_DOCS ? 1 : 0
+  name                = "docs"
+  zone_name           = azurerm_dns_zone.dns_zone.name
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+  ttl                 = 300
+  record              = data.azurerm_public_ip.hub-nva-vip_public_ip.fqdn
+}
+
 resource "azurerm_public_ip" "hub-nva-vip_docs_public_ip" {
   count               = var.APPLICATION_DOCS ? 1 : 0
   name                = "hub-nva-vip_docs_public_ip"
