@@ -1,11 +1,11 @@
-resource "kubernetes_namespace" "lacework-agent" {
+resource "kubernetes_namespace" "cert-manager" {
   depends_on = [
     azurerm_kubernetes_cluster.kubernetes_cluster
   ]
   metadata {
-    name = "lacework-agent"
+    name = "cert-manager"
     labels = {
-      name = "lacework-agent"
+      name = "cert-manager"
     }
   }
 }
@@ -18,6 +18,18 @@ resource "kubernetes_secret" "godaddy-api-key" {
   type = "Opaque"
   data = {
     token = base64encode("${var.GODADDY_API_KEY}:${var.GODADDY_SECRET_KEY}")
+  }
+}
+
+resource "kubernetes_namespace" "lacework-agent" {
+  depends_on = [
+    azurerm_kubernetes_cluster.kubernetes_cluster
+  ]
+  metadata {
+    name = "lacework-agent"
+    labels = {
+      name = "lacework-agent"
+    }
   }
 }
 
