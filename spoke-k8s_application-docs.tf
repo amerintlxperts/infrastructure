@@ -27,6 +27,17 @@ resource "kubernetes_namespace" "docs" {
   }
 }
 
+resource "kubernetes_secret" "godaddy-api-key" {
+  metadata {
+    name      = "godaddy-api-key"
+    namespace = kubernetes_namespace.docs[0].metadata[0].name
+  }
+  type = "Opaque"
+  data = {
+    token = base64encode("${var.GODADDY_API_KEY}:${var.GODADDY_SECRET_KEY}")
+  }
+}
+
 resource "random_password" "salt" {
   length           = 8
   special          = true
