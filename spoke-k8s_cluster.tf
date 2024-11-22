@@ -81,11 +81,12 @@ resource "azurerm_role_assignment" "dns_zone_contributor" {
   scope          = azurerm_dns_zone.dns_zone.id
 }
 
-resource "azurerm_user_assigned_identity_federated_credential" "cert_manager" {
+resource "azurerm_federated_identity_credential" "cert_manager" {
   name                = "cert-manager"
-  user_assigned_identity_id = azurerm_user_assigned_identity.my_identity.id
-  audience            = "api://AzureADTokenExchange"
+  audience            = ["api://AzureADTokenExchange"]
   issuer              = azurerm_kubernetes_service.kubernetes_cluster.oidc_issuer_url
+  #user_assigned_identity_id = azurerm_user_assigned_identity.my_identity.id
+  parent_id           = azurerm_user_assigned_identity.my_identity.id
   subject             = "system:serviceaccount:cert-manager:cert-manager"
 }
 
