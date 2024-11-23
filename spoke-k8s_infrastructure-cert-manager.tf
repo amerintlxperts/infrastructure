@@ -13,7 +13,7 @@ resource "kubernetes_namespace" "cert-manager" {
 resource "kubernetes_secret" "cert-manager-azure-dns-credentials" {
   metadata {
     name      = "cert-manager-azure-dns-credentials"
-    namespace = kubernetes_namespace.cert-manager[0].metadata[0].name
+    namespace = kubernetes_namespace.cert-manager.metadata[0].name
   }
   data = {
     subscriptionID = var.subscriptionID
