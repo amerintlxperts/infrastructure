@@ -10,8 +10,8 @@ variable "APPLICATION_DOCS" {
 
 variable "DNS_ZONE" {
   description = "DNS Zone"
-  default = "example.com"
-  type = string
+  default     = "example.com"
+  type        = string
 }
 
 variable "HTUSERNAME" {

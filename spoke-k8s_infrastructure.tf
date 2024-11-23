@@ -1,35 +1,3 @@
-resource "azurerm_user_assigned_identity" "cert-manager" {
-  name                = "cert-manager"
-  resource_group_name = azurerm_resource_group.azure_resource_group.name
-  location            = azurerm_resource_group.azure_resource_group.location
-}
-
-data "azurerm_user_assigned_identity" "cert_manager_data" {
-  name                = azurerm_user_assigned_identity.cert-manager.name
-  resource_group_name = azurerm_resource_group.azure_resource_group.name
-}
-
-resource "github_actions_secret" "cert-manager-CLIENTID" {
-  repository      = var.MANIFESTS_INFRASTRUCTURE_REPO_NAME
-  secret_name     = "cert-manager-CLIENTID"
-  plaintext_value = data.azurerm_user_assigned_identity.cert_manager_data.client_id
-}
-
-resource "azurerm_role_assignment" "cert-manager_role_assignment" {
-  principal_id   = azurerm_user_assigned_identity.cert-manager.principal_id
-  role_definition_name = "DNS Zone Contributor"
-  scope          = azurerm_dns_zone.dns_zone.id
-}
-
-resource "azurerm_federated_identity_credential" "cert-manager_federated_identity_credential" {
-  name                = "cert-manager_federated_identity_credential"
-  resource_group_name = azurerm_resource_group.azure_resource_group.name
-  audience            = ["api://AzureADTokenExchange"]
-  issuer              = azurerm_kubernetes_cluster.kubernetes_cluster.oidc_issuer_url
-  parent_id           = azurerm_user_assigned_identity.cert-manager.id
-  subject             = "system:serviceaccount:cert-manager:cert-manager"
-}
-
 resource "kubernetes_namespace" "lacework-agent" {
   depends_on = [
     azurerm_kubernetes_cluster.kubernetes_cluster
@@ -84,14 +52,6 @@ resource "azurerm_kubernetes_flux_configuration" "infrastructure" {
     recreating_enabled         = true
     garbage_collection_enabled = true
     sync_interval_in_seconds   = 60
-  }
-  kustomizations {
-    name                       = "cert-manager-clusterissuer"
-    recreating_enabled         = true
-    garbage_collection_enabled = true
-    sync_interval_in_seconds   = 60
-    path                       = "./cert-manager-clusterissuer"
-    depends_on                 = ["infrastructure"]
   }
   depends_on = [
     azurerm_kubernetes_cluster_extension.flux_extension
