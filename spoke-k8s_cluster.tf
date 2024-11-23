@@ -90,7 +90,6 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   #sku_tier = "Premium"
   #support_plan                      = "AKSLongTermSupport"
   #kubernetes_version                = "1.27"
-  sku_tier                          = "Standard"
   sku_tier                          = var.PRODUCTION_ENVIRONMENT ? "Standard" : "Free"
   cost_analysis_enabled             = var.PRODUCTION_ENVIRONMENT ? true : false
   support_plan                      = "KubernetesOfficial"
