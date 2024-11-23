@@ -83,6 +83,11 @@ variable "OWNER_EMAIL" {
   }
 }
 
+variable "NAME" {
+  description = "Fullname of the owner for resource tagging"
+  type = string
+}
+
 variable "GITHUB_TOKEN" {
   type        = string
   description = "GitHub token for authenticating to the repository"
