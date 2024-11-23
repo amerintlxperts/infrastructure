@@ -9,7 +9,7 @@ data "azurerm_user_assigned_identity" "cert_manager_data" {
   resource_group_name = azurerm_resource_group.azure_resource_group.name
 }
 
-resource "github_actions_secret" "DOCS_FQDN" {
+resource "github_actions_secret" "cert-manager-CLIENTID" {
   repository      = var.MANIFESTS_INFRASTRUCTURE_REPO_NAME
   secret_name     = "cert-manager-CLIENTID"
   plaintext_value = data.azurerm_user_assigned_identity.cert_manager_data.client_id
