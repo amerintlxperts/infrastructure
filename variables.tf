@@ -13,6 +13,15 @@ variable "ARM_SUBSCRIPTION_ID" {
   type        = string
 }
 
+variable "LETSENCRYPT_URL" {
+  description = "Production or staging Let's Encrypt URL"
+  type        = string
+  validation {
+    condition     = var.LETSENCRYPT_URL == "https://acme-staging-v02.api.letsencrypt.org/directory" || var.LETSENCRYPT_URL == "https://acme-v02.api.letsencrypt.org/directory"
+    error_message = "LETSENCRYPT_URL must be either 'https://acme-staging-v02.api.letsencrypt.org/directory' or 'https://acme-v02.api.letsencrypt.org/directory'."
+  }
+}
+
 variable "DNS_ZONE" {
   description = "DNS Zone"
   default     = "example.com"
@@ -66,7 +75,6 @@ variable "LW_AGENT_TOKEN" {
 }
 
 variable "OWNER_EMAIL" {
-  default     = "root@example.com"
   description = "Email address for use with Owner tag."
   type        = string
   validation {

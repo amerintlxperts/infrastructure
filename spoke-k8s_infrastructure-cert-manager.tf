@@ -10,18 +10,6 @@ resource "kubernetes_namespace" "cert-manager" {
   }
 }
 
-resource "kubernetes_secret" "cert-manager-azure-dns-credentials" {
-  metadata {
-    name      = "cert-manager-azure-dns-credentials"
-    namespace = kubernetes_namespace.cert-manager.metadata[0].name
-  }
-  data = {
-    subscriptionID = var.ARM_SUBSCRIPTION_ID
-    clientID       = data.azurerm_user_assigned_identity.cert_manager_data.client_id
-  }
-  type = "Opaque"
-}
-
 resource "azurerm_user_assigned_identity" "cert-manager" {
   name                = "cert-manager"
   resource_group_name = azurerm_resource_group.azure_resource_group.name
@@ -79,3 +67,40 @@ resource "azurerm_kubernetes_flux_configuration" "cert-manager" {
   ]
 }
 
+resource "kubernetes_manifest" "cert-manager_clusterissuer" {
+  depends_on = [
+    azurerm_kubernetes_flux_configuration.cert-manager
+  ]
+  manifest = {
+    "apiVersion" = "cert-manager.io/v1"
+    "kind"       = "ClusterIssuer"
+    "metadata" = {
+      "name" = "letsencrypt"
+      "namespace" = "cert-manager"
+    }
+    "spec" = {
+      "acme" = {
+        "server"              = var.LETSENCRYPT_URL
+        "email"               = var.OWNER_EMAIL
+        "privateKeySecretRef" = {
+          "name" = "letsencrypt"
+        }
+        "solvers" = [
+          {
+            "dns01" = {
+              "azureDNS" = {
+                "resourceGroupName" = azurerm_resource_group.azure_resource_group.name
+                "subscriptionID"    = var.ARM_SUBSCRIPTION_ID
+                "hostedZoneName"    = var.DNS_ZONE
+                "environment"       = "AzurePublicCloud"
+                "managedIdentity" = {
+                  "clientID" = data.azurerm_user_assigned_identity.cert_manager_data.client_id
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
