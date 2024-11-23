@@ -109,6 +109,7 @@ jobs:
           TF_VAR_DNS_ZONE: ${{ vars.DNS_ZONE }}
           TF_VAR_OWNER_EMAIL: ${{ secrets.OWNER_EMAIL }}
           TF_VAR_NAME: ${{ vars.NAME }}
+          TF_VAR_LETSENCRYPT_URL: ${{ vars.LETSENCRYPT_URL }}
           TF_IN_AUTOMATION: true
         run: |
           export exitcode=0
@@ -234,6 +235,7 @@ jobs:
           TF_VAR_DNS_ZONE: ${{ vars.DNS_ZONE }}
           TF_VAR_OWNER_EMAIL: ${{ secrets.OWNER_EMAIL }}
           TF_VAR_NAME: ${{ vars.NAME }}
+          TF_VAR_LETSENCRYPT_URL: ${{ vars.LETSENCRYPT_URL }}
           TF_IN_AUTOMATION: true
           GH_TOKEN: ${{ secrets.PAT }}
         run: terraform apply -auto-approve tfplan
@@ -300,6 +302,7 @@ jobs:
           TF_VAR_DNS_ZONE: ${{ vars.DNS_ZONE }}
           TF_VAR_OWNER_EMAIL: ${{ secrets.OWNER_EMAIL }}
           TF_VAR_NAME: ${{ vars.NAME }}
+          TF_VAR_LETSENCRYPT_URL: ${{ vars.LETSENCRYPT_URL }}
           TF_IN_AUTOMATION: true
         run: |
           terraform destroy -auto-approve
