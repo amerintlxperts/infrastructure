@@ -133,7 +133,7 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
 }
 
 data "azurerm_resource_group" "managed_rg" {
-  name = azurerm_kubernetes_cluster.aks_cluster.node_resource_group
+  name = azurerm_kubernetes_cluster.kubernetes_cluster.node_resource_group
 }
 
 resource "azurerm_resource_group" "tagged_managed_rg" {
