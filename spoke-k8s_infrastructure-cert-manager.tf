@@ -16,8 +16,8 @@ resource "kubernetes_secret" "cert-manager-azure-dns-credentials" {
     namespace = kubernetes_namespace.cert-manager.metadata[0].name
   }
   data = {
-    subscriptionID = var.subscriptionID
-    clientID = data.azurerm_user_assigned_identity.cert_manager_data.client_id
+    subscriptionID = var.ARM_SUBSCRIPTION_ID
+    clientID       = data.azurerm_user_assigned_identity.cert_manager_data.client_id
   }
   type = "Opaque"
 }

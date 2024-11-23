@@ -8,6 +8,11 @@ variable "APPLICATION_DOCS" {
   default     = "true"
 }
 
+variable "ARM_SUBSCRIPTION_ID" {
+  description = "Azure Subscription ID"
+  type        = string
+}
+
 variable "DNS_ZONE" {
   description = "DNS Zone"
   default     = "example.com"
