@@ -1,3 +1,27 @@
+resource "kubernetes_namespace" "cert-manager" {
+  depends_on = [
+    azurerm_kubernetes_cluster.kubernetes_cluster
+  ]
+  metadata {
+    name = "cert-manager"
+    labels = {
+      name = "cert-manager"
+    }
+  }
+}
+
+resource "kubernetes_secret" "cert-manager-azure-dns-credentials" {
+  metadata {
+    name      = "cert-manager-azure-dns-credentials"
+    namespace = kubernetes_namespace.cert-manager[0].metadata[0].name
+  }
+  data = {
+    subscriptionID = var.subscriptionID
+    clientID = data.azurerm_user_assigned_identity.cert_manager_data.client_id
+  }
+  type = "Opaque"
+}
+
 resource "azurerm_user_assigned_identity" "cert-manager" {
   name                = "cert-manager"
   resource_group_name = azurerm_resource_group.azure_resource_group.name
