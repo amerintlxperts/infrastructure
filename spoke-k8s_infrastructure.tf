@@ -4,6 +4,17 @@ resource "azurerm_user_assigned_identity" "cert-manager" {
   location            = azurerm_resource_group.azure_resource_group.location
 }
 
+data "azurerm_user_assigned_identity" "cert_manager_data" {
+  name                = azurerm_user_assigned_identity.cert-manager.name
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+}
+
+resource "github_actions_secret" "DOCS_FQDN" {
+  repository      = var.MANIFESTS_INFRASTRUCTURE_REPO_NAME
+  secret_name     = "cert-manager-CLIENTID"
+  plaintext_value = data.azurerm_user_assigned_identity.cert_manager_data.client_id
+}
+
 resource "azurerm_role_assignment" "cert-manager_role_assignment" {
   principal_id   = azurerm_user_assigned_identity.cert-manager.principal_id
   role_definition_name = "DNS Zone Contributor"
