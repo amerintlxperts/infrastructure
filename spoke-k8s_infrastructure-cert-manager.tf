@@ -73,16 +73,47 @@ resource "azurerm_kubernetes_flux_configuration" "cert-manager" {
     sync_interval_in_seconds   = 60
     path                       = "./cert-manager"
   }
-  kustomizations {
-    name                       = "cert-manager-clusterissuer"
-    recreating_enabled         = true
-    garbage_collection_enabled = true
-    sync_interval_in_seconds   = 60
-    path                       = "./cert-manager-clusterissuer"
-    depends_on                 = ["cert-manager"]
-  }
   depends_on = [
     azurerm_kubernetes_cluster_extension.flux_extension,
     kubernetes_namespace.cert-manager
   ]
 }
+
+resource "kubernetes_secret" "flux_git_auth" {
+  metadata {
+    name      = "flux-git-auth"
+    namespace = "cluster-config"
+  }
+  data = {
+    "identity" = base64encode(var.MANIFESTS_INFRASTRUCTURE_SSH_PRIVATE_KEY)
+  }
+  type = "Opaque"
+}
+
+resource "flux_kustomization" "cert_manager_clusterissuer" {
+  name       = "cert-manager-clusterissuer"
+  namespace = "cluster-config"
+
+  path       = "./cert-manager-clusterissuer"
+  interval   = "5m0s"
+  prune      = true
+  target_namespace = "cert-manager"
+
+  source_ref {
+    kind = "GitRepository"
+    name = flux_git_repository.cert_manager_repo.metadata[0].name
+  }
+
+  depends_on = [
+    azurerm_kubernetes_flux_configuration.cert-manager
+  ]
+
+  post_build {
+    substitute_from {
+      kind     = "Secret"
+      name     = "cert-manager-azure-dns-credentials"
+      optional = false
+    }
+  }
+}
+

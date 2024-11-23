@@ -41,6 +41,10 @@ terraform {
       source  = "loafoe/htpasswd"
       version = "1.2.1"
     }
+    flux = {
+      source = "fluxcd/flux"
+      version = "1.4.0"
+    }
   }
   backend "azurerm" {}
 }
@@ -77,4 +81,13 @@ provider "kubernetes" {
   client_certificate     = base64decode(azurerm_kubernetes_cluster.kubernetes_cluster.kube_config[0].client_certificate)
   client_key             = base64decode(azurerm_kubernetes_cluster.kubernetes_cluster.kube_config[0].client_key)
   cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.kubernetes_cluster.kube_config[0].cluster_ca_certificate)
+}
+
+provider "flux" {
+  kubernetes = {
+    host                   = azurerm_kubernetes_cluster.kubernetes_cluster.kube_config[0].host
+    client_certificate     = base64decode(azurerm_kubernetes_cluster.kubernetes_cluster.kube_config[0].client_certificate)
+    client_key             = base64decode(azurerm_kubernetes_cluster.kubernetes_cluster.kube_config[0].client_key)
+    cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.kubernetes_cluster.kube_config[0].cluster_ca_certificate)
+  }
 }
