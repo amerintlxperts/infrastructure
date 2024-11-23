@@ -86,10 +86,6 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   location            = azurerm_resource_group.azure_resource_group.location
   resource_group_name = azurerm_resource_group.azure_resource_group.name
   dns_prefix          = azurerm_resource_group.azure_resource_group.name
-  #kubernetes_version                = data.azurerm_kubernetes_service_versions.current.latest_version
-  #sku_tier = "Premium"
-  #support_plan                      = "AKSLongTermSupport"
-  #kubernetes_version                = "1.27"
   sku_tier                          = var.PRODUCTION_ENVIRONMENT ? "Standard" : "Free"
   cost_analysis_enabled             = var.PRODUCTION_ENVIRONMENT ? true : false
   support_plan                      = "KubernetesOfficial"
@@ -133,8 +129,19 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   }
   identity {
     type = "SystemAssigned"
-    #type         = "UserAssigned"
-    #identity_ids = [azurerm_user_assigned_identity.my_identity.id]
+  }
+}
+
+data "azurerm_resource_group" "managed_rg" {
+  name = azurerm_kubernetes_cluster.aks_cluster.node_resource_group
+}
+
+resource "azurerm_resource_group" "tagged_managed_rg" {
+  name     = data.azurerm_resource_group.managed_rg.name
+  location = data.azurerm_resource_group.managed_rg.location
+  tags = {
+    Username = var.OWNER_EMAIL
+    Name     = var.NAME
   }
 }
 
