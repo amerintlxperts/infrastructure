@@ -102,9 +102,16 @@ resource "azurerm_kubernetes_flux_configuration" "docs" {
   ]
 }
 
-resource "github_actions_secret" "ACR_LOGIN_SERVER" {
+resource "github_actions_secret" "DOCS_BUILDER_ACR_LOGIN_SERVER" {
   count           = var.APPLICATION_DOCS ? 1 : 0
   repository      = var.DOCS_BUILDER_REPO_NAME
+  secret_name     = "ACR_LOGIN_SERVER"
+  plaintext_value = azurerm_container_registry.container_registry.login_server
+}
+
+resource "github_actions_secret" "MANIFESTS_APPLICATIONS_ACR_LOGIN_SERVER" {
+  count           = var.APPLICATION_DOCS ? 1 : 0
+  repository      = var.MANIFESTS_APPLICATIONS_REPO_NAME
   secret_name     = "ACR_LOGIN_SERVER"
   plaintext_value = azurerm_container_registry.container_registry.login_server
 }
@@ -112,7 +119,7 @@ resource "github_actions_secret" "ACR_LOGIN_SERVER" {
 resource "null_resource" "trigger_docs_builder_workflow" {
   count = var.APPLICATION_DOCS ? 1 : 0
   depends_on = [
-    github_actions_secret.ACR_LOGIN_SERVER
+    github_actions_secret.DOCS_BUILDER_ACR_LOGIN_SERVER
   ]
   triggers = {
     acr_login_server = azurerm_container_registry.container_registry.login_server
