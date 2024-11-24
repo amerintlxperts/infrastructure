@@ -48,7 +48,7 @@ resource "htpasswd_password" "hash" {
 }
 
 resource "kubernetes_secret" "htpasswd_secret" {
-  count       = var.APPLICATION_DOCS ? 1 : 0
+  count = var.APPLICATION_DOCS ? 1 : 0
   metadata {
     name      = "htpasswd-secret"
     namespace = kubernetes_namespace.docs[0].metadata[0].name
@@ -102,31 +102,49 @@ resource "azurerm_kubernetes_flux_configuration" "docs" {
   ]
 }
 
-resource "github_actions_secret" "ACR_LOGIN_SERVER" {
+resource "github_actions_secret" "DOCS_BUILDER_ACR_LOGIN_SERVER" {
   count           = var.APPLICATION_DOCS ? 1 : 0
   repository      = var.DOCS_BUILDER_REPO_NAME
   secret_name     = "ACR_LOGIN_SERVER"
   plaintext_value = azurerm_container_registry.container_registry.login_server
 }
 
-resource "github_actions_secret" "DOCS_FQDN" {
+resource "github_actions_secret" "MANIFESTS_APPLICATIONS_ACR_LOGIN_SERVER" {
   count           = var.APPLICATION_DOCS ? 1 : 0
   repository      = var.MANIFESTS_APPLICATIONS_REPO_NAME
-  secret_name     = "DOCS_FQDN"
-  plaintext_value = data.azurerm_public_ip.hub-nva-vip_docs_public_ip[0].fqdn
+  secret_name     = "ACR_LOGIN_SERVER"
+  plaintext_value = azurerm_container_registry.container_registry.login_server
 }
 
 resource "null_resource" "trigger_docs_builder_workflow" {
   count = var.APPLICATION_DOCS ? 1 : 0
-
-  # Define dependency on both github_actions_secret resources
   depends_on = [
-    github_actions_secret.ACR_LOGIN_SERVER,
-    github_actions_secret.DOCS_FQDN
+    github_actions_secret.DOCS_BUILDER_ACR_LOGIN_SERVER
   ]
-
-  # Run the provisioner only after both secrets have been created
+  triggers = {
+    acr_login_server = azurerm_container_registry.container_registry.login_server
+  }
   provisioner "local-exec" {
     command = "gh workflow run docs-builder --repo ${var.GITHUB_ORG}/${var.DOCS_BUILDER_REPO_NAME} --ref main"
+  }
+}
+
+resource "github_actions_variable" "DOCS_FQDN" {
+  count         = var.APPLICATION_DOCS ? 1 : 0
+  repository    = var.MANIFESTS_APPLICATIONS_REPO_NAME
+  variable_name = "DOCS_FQDN"
+  value         = "${azurerm_dns_cname_record.docs[0].name}.${azurerm_dns_zone.dns_zone.name}"
+}
+
+resource "null_resource" "trigger_manifests-applications_workflow" {
+  count = var.APPLICATION_DOCS ? 1 : 0
+  depends_on = [
+    github_actions_variable.DOCS_FQDN
+  ]
+  triggers = {
+    docs_fqdn = "${azurerm_dns_cname_record.docs[0].name}.${azurerm_dns_zone.dns_zone.name}"
+  }
+  provisioner "local-exec" {
+    command = "gh workflow run update-manifest --repo ${var.GITHUB_ORG}/${var.MANIFESTS_APPLICATIONS_REPO_NAME} --ref main"
   }
 }

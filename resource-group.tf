@@ -4,6 +4,7 @@ resource "azurerm_resource_group" "azure_resource_group" {
   location = var.LOCATION
   tags = {
     Username = var.OWNER_EMAIL
+    Name     = var.NAME
   }
   lifecycle {
     ignore_changes = [

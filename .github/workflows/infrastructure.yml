@@ -84,6 +84,7 @@ jobs:
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
           ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          TF_VAR_ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           TF_VAR_PROJECT_NAME: ${{ vars.PROJECT_NAME }}
           TF_VAR_LOCATION: ${{ vars.LOCATION }}
           TF_VAR_GITHUB_TOKEN: ${{ secrets.PAT }}
@@ -106,6 +107,9 @@ jobs:
           TF_VAR_HTUSERNAME: ${{ secrets.HTUSERNAME }}
           TF_VAR_HTPASSWD: ${{ secrets.HTPASSWD }}
           TF_VAR_DNS_ZONE: ${{ vars.DNS_ZONE }}
+          TF_VAR_OWNER_EMAIL: ${{ secrets.OWNER_EMAIL }}
+          TF_VAR_NAME: ${{ vars.NAME }}
+          TF_VAR_LETSENCRYPT_URL: ${{ vars.LETSENCRYPT_URL }}
           TF_IN_AUTOMATION: true
         run: |
           export exitcode=0
@@ -206,6 +210,7 @@ jobs:
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          TF_VAR_ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           TF_VAR_PROJECT_NAME: ${{ vars.PROJECT_NAME }}
           TF_VAR_LOCATION: ${{ vars.LOCATION }}
           TF_VAR_GITHUB_TOKEN: ${{ secrets.PAT }}
@@ -228,6 +233,9 @@ jobs:
           TF_VAR_HTUSERNAME: ${{ secrets.HTUSERNAME }}
           TF_VAR_HTPASSWD: ${{ secrets.HTPASSWD }}
           TF_VAR_DNS_ZONE: ${{ vars.DNS_ZONE }}
+          TF_VAR_OWNER_EMAIL: ${{ secrets.OWNER_EMAIL }}
+          TF_VAR_NAME: ${{ vars.NAME }}
+          TF_VAR_LETSENCRYPT_URL: ${{ vars.LETSENCRYPT_URL }}
           TF_IN_AUTOMATION: true
           GH_TOKEN: ${{ secrets.PAT }}
         run: terraform apply -auto-approve tfplan
@@ -269,6 +277,7 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          TF_VAR_ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           TF_VAR_PROJECT_NAME: ${{ vars.PROJECT_NAME }}
           TF_VAR_LOCATION: ${{ vars.LOCATION }}
           TF_VAR_GITHUB_TOKEN: ${{ secrets.PAT }}
@@ -291,6 +300,9 @@ jobs:
           TF_VAR_HTUSERNAME: ${{ secrets.HTUSERNAME }}
           TF_VAR_HTPASSWD: ${{ secrets.HTPASSWD }}
           TF_VAR_DNS_ZONE: ${{ vars.DNS_ZONE }}
+          TF_VAR_OWNER_EMAIL: ${{ secrets.OWNER_EMAIL }}
+          TF_VAR_NAME: ${{ vars.NAME }}
+          TF_VAR_LETSENCRYPT_URL: ${{ vars.LETSENCRYPT_URL }}
           TF_IN_AUTOMATION: true
         run: |
           terraform destroy -auto-approve

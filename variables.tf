@@ -8,10 +8,24 @@ variable "APPLICATION_DOCS" {
   default     = "true"
 }
 
+variable "ARM_SUBSCRIPTION_ID" {
+  description = "Azure Subscription ID"
+  type        = string
+}
+
+variable "LETSENCRYPT_URL" {
+  description = "Production or staging Let's Encrypt URL"
+  type        = string
+  validation {
+    condition     = var.LETSENCRYPT_URL == "https://acme-staging-v02.api.letsencrypt.org/directory" || var.LETSENCRYPT_URL == "https://acme-v02.api.letsencrypt.org/directory"
+    error_message = "LETSENCRYPT_URL must be either 'https://acme-staging-v02.api.letsencrypt.org/directory' or 'https://acme-v02.api.letsencrypt.org/directory'."
+  }
+}
+
 variable "DNS_ZONE" {
   description = "DNS Zone"
-  default = "example.com"
-  type = string
+  default     = "example.com"
+  type        = string
 }
 
 variable "HTUSERNAME" {
@@ -61,13 +75,17 @@ variable "LW_AGENT_TOKEN" {
 }
 
 variable "OWNER_EMAIL" {
-  default     = "root@example.com"
   description = "Email address for use with Owner tag."
   type        = string
   validation {
     condition     = can(regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", var.OWNER_EMAIL))
     error_message = "The OWNER_EMAIL must be a valid email address."
   }
+}
+
+variable "NAME" {
+  description = "Fullname of the owner for resource tagging"
+  type        = string
 }
 
 variable "GITHUB_TOKEN" {

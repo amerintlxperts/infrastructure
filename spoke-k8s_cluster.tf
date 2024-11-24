@@ -81,15 +81,11 @@ locals {
 }
 
 resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
-  depends_on          = [azurerm_virtual_network_peering.spoke-to-hub_virtual_network_peering, azurerm_linux_virtual_machine.hub-nva_virtual_machine]
-  name                = local.cluster_name
-  location            = azurerm_resource_group.azure_resource_group.location
-  resource_group_name = azurerm_resource_group.azure_resource_group.name
-  dns_prefix          = azurerm_resource_group.azure_resource_group.name
-  #kubernetes_version                = data.azurerm_kubernetes_service_versions.current.latest_version
-  #sku_tier = "Premium"
-  #support_plan                      = "AKSLongTermSupport"
-  #kubernetes_version                = "1.27"
+  depends_on                        = [azurerm_virtual_network_peering.spoke-to-hub_virtual_network_peering, azurerm_linux_virtual_machine.hub-nva_virtual_machine]
+  name                              = local.cluster_name
+  location                          = azurerm_resource_group.azure_resource_group.location
+  resource_group_name               = azurerm_resource_group.azure_resource_group.name
+  dns_prefix                        = azurerm_resource_group.azure_resource_group.name
   sku_tier                          = var.PRODUCTION_ENVIRONMENT ? "Standard" : "Free"
   cost_analysis_enabled             = var.PRODUCTION_ENVIRONMENT ? true : false
   support_plan                      = "KubernetesOfficial"
@@ -133,8 +129,37 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   }
   identity {
     type = "SystemAssigned"
-    #type         = "UserAssigned"
-    #identity_ids = [azurerm_user_assigned_identity.my_identity.id]
+  }
+}
+
+resource "null_resource" "tag_node_resource_group" {
+  depends_on = [azurerm_kubernetes_cluster.kubernetes_cluster]
+  triggers = {
+    cluster_id         = azurerm_kubernetes_cluster.kubernetes_cluster.id
+    cluster_name       = azurerm_kubernetes_cluster.kubernetes_cluster.name
+    kubernetes_version = azurerm_kubernetes_cluster.kubernetes_cluster.kubernetes_version
+    node_pool_config = join(",", [
+      azurerm_kubernetes_cluster.kubernetes_cluster.default_node_pool[0].name,
+      tostring(azurerm_kubernetes_cluster.kubernetes_cluster.default_node_pool[0].node_count),
+      azurerm_kubernetes_cluster.kubernetes_cluster.default_node_pool[0].vm_size,
+      tostring(azurerm_kubernetes_cluster.kubernetes_cluster.default_node_pool[0].max_pods)
+    ])
+    location              = azurerm_kubernetes_cluster.kubernetes_cluster.location
+    resource_group_name   = azurerm_kubernetes_cluster.kubernetes_cluster.resource_group_name
+    network_profile       = jsonencode(azurerm_kubernetes_cluster.kubernetes_cluster.network_profile)
+    identity              = jsonencode(azurerm_kubernetes_cluster.kubernetes_cluster.identity)
+    oidc_issuer_enabled   = tostring(azurerm_kubernetes_cluster.kubernetes_cluster.oidc_issuer_enabled)
+    sku_tier              = azurerm_kubernetes_cluster.kubernetes_cluster.sku_tier
+    cost_analysis_enabled = tostring(azurerm_kubernetes_cluster.kubernetes_cluster.cost_analysis_enabled)
+    support_plan          = azurerm_kubernetes_cluster.kubernetes_cluster.support_plan
+    node_resource_group   = azurerm_kubernetes_cluster.kubernetes_cluster.node_resource_group
+  }
+  provisioner "local-exec" {
+    command = <<EOT
+      az group update \
+        --name ${azurerm_kubernetes_cluster.kubernetes_cluster.node_resource_group} \
+        --set tags."Username"="${var.OWNER_EMAIL}" tags."Name"="${var.NAME}"
+    EOT
   }
 }
 
