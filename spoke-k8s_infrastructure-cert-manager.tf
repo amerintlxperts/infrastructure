@@ -1,15 +1,3 @@
-#resource "kubernetes_namespace" "cert-manager" {
-#  depends_on = [
-#    azurerm_kubernetes_cluster.kubernetes_cluster
-#  ]
-#  metadata {
-#    name = "cert-manager"
-#    labels = {
-#      name = "cert-manager"
-#    }
-#  }
-#}
-
 resource "azurerm_user_assigned_identity" "cert-manager" {
   name                = "cert-manager"
   resource_group_name = azurerm_resource_group.azure_resource_group.name
@@ -39,7 +27,7 @@ resource "azurerm_federated_identity_credential" "cert-manager_federated_identit
 
 resource "kubernetes_manifest" "cert-manager_clusterissuer" {
   depends_on = [
-    azurerm_kubernetes_flux_configuration.cert-manager
+    azurerm_kubernetes_flux_configuration.infrastructure
   ]
   manifest = {
     "apiVersion" = "cert-manager.io/v1"
