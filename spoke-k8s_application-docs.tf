@@ -113,7 +113,7 @@ resource "github_actions_variable" "DOCS_FQDN" {
   count         = var.APPLICATION_DOCS ? 1 : 0
   repository    = var.MANIFESTS_APPLICATIONS_REPO_NAME
   variable_name = "DOCS_FQDN"
-  value         = data.azurerm_public_ip.hub-nva-vip_docs_public_ip[0].fqdn
+  value         = "${azurerm_dns_cname_record.docs[0].name}.${azurerm_dns_zone.dns_zone.name}"
 }
 
 resource "null_resource" "trigger_docs_builder_workflow" {
