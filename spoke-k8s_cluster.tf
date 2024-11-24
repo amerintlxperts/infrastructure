@@ -132,16 +132,15 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   }
 }
 
-data "azurerm_resource_group" "managed_rg" {
-  name = azurerm_kubernetes_cluster.kubernetes_cluster.node_resource_group
-}
+resource "null_resource" "tag_node_resource_group" {
+  depends_on = [azurerm_kubernetes_cluster.aks_cluster]
 
-resource "azurerm_resource_group" "tagged_managed_rg" {
-  name     = data.azurerm_resource_group.managed_rg.name
-  location = data.azurerm_resource_group.managed_rg.location
-  tags = {
-    Username = var.OWNER_EMAIL
-    Name     = var.NAME
+  provisioner "local-exec" {
+    command = <<EOT
+      az group update \
+        --name ${azurerm_kubernetes_cluster.aks_cluster.node_resource_group} \
+        --tags Username=${var.OWNER_EMAIL} Name=${var.NAME}
+    EOT
   }
 }
 
