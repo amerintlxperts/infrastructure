@@ -139,7 +139,7 @@ resource "null_resource" "tag_node_resource_group" {
     command = <<EOT
       az group update \
         --name ${azurerm_kubernetes_cluster.kubernetes_cluster.node_resource_group} \
-        --tags Username=${var.OWNER_EMAIL} Name=${var.NAME}
+        --set tags."Username"="${var.OWNER_EMAIL}" tags."Name"="${var.NAME}"
     EOT
   }
 }
