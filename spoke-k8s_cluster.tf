@@ -133,12 +133,12 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
 }
 
 resource "null_resource" "tag_node_resource_group" {
-  depends_on = [azurerm_kubernetes_cluster.aks_cluster]
+  depends_on = [azurerm_kubernetes_cluster.kubernetes_cluster]
 
   provisioner "local-exec" {
     command = <<EOT
       az group update \
-        --name ${azurerm_kubernetes_cluster.aks_cluster.node_resource_group} \
+        --name ${azurerm_kubernetes_cluster.kubernetes_cluster.node_resource_group} \
         --tags Username=${var.OWNER_EMAIL} Name=${var.NAME}
     EOT
   }
