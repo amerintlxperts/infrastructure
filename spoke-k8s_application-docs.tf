@@ -132,7 +132,7 @@ resource "github_actions_variable" "DOCS_FQDN" {
 resource "null_resource" "trigger_manifests-applications_workflow" {
   count = var.APPLICATION_DOCS ? 1 : 0
   depends_on = [
-    github_actions_secret.DOCS_FQDN
+    github_actions_variable.DOCS_FQDN
   ]
   triggers = {
     docs_fqdn = "${azurerm_dns_cname_record.docs[0].name}.${azurerm_dns_zone.dns_zone.name}"
