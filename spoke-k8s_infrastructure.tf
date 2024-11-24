@@ -54,6 +54,7 @@ resource "azurerm_kubernetes_flux_configuration" "infrastructure" {
     sync_interval_in_seconds   = 60
   }
   depends_on = [
-    azurerm_kubernetes_cluster_extension.flux_extension
+    azurerm_kubernetes_cluster_extension.flux_extension,
+    kubernetes_namespace.lacework-agent
   ]
 }
