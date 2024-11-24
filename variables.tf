@@ -85,7 +85,7 @@ variable "OWNER_EMAIL" {
 
 variable "NAME" {
   description = "Fullname of the owner for resource tagging"
-  type = string
+  type        = string
 }
 
 variable "GITHUB_TOKEN" {

@@ -79,8 +79,8 @@ resource "kubernetes_manifest" "cert-manager_clusterissuer" {
     }
     "spec" = {
       "acme" = {
-        "server"              = var.LETSENCRYPT_URL
-        "email"               = var.OWNER_EMAIL
+        "server" = var.LETSENCRYPT_URL
+        "email"  = var.OWNER_EMAIL
         "privateKeySecretRef" = {
           "name" = "letsencrypt"
         }
