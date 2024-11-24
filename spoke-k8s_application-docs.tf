@@ -109,23 +109,21 @@ resource "github_actions_secret" "ACR_LOGIN_SERVER" {
   plaintext_value = azurerm_container_registry.container_registry.login_server
 }
 
-resource "github_actions_secret" "DOCS_FQDN" {
-  count           = var.APPLICATION_DOCS ? 1 : 0
-  repository      = var.MANIFESTS_APPLICATIONS_REPO_NAME
-  secret_name     = "DOCS_FQDN"
-  plaintext_value = data.azurerm_public_ip.hub-nva-vip_docs_public_ip[0].fqdn
+resource "github_actions_variable" "DOCS_FQDN" {
+  count         = var.APPLICATION_DOCS ? 1 : 0
+  repository    = var.MANIFESTS_APPLICATIONS_REPO_NAME
+  variable_name = "DOCS_FQDN"
+  value         = data.azurerm_public_ip.hub-nva-vip_docs_public_ip[0].fqdn
 }
 
 resource "null_resource" "trigger_docs_builder_workflow" {
   count = var.APPLICATION_DOCS ? 1 : 0
-
-  # Define dependency on both github_actions_secret resources
   depends_on = [
-    github_actions_secret.ACR_LOGIN_SERVER,
-    github_actions_secret.DOCS_FQDN
+    github_actions_secret.ACR_LOGIN_SERVER
   ]
-
-  # Run the provisioner only after both secrets have been created
+  triggers = {
+    acr_login_server = azurerm_container_registry.container_registry.login_server
+  }
   provisioner "local-exec" {
     command = "gh workflow run docs-builder --repo ${var.GITHUB_ORG}/${var.DOCS_BUILDER_REPO_NAME} --ref main"
   }
