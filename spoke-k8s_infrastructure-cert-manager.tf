@@ -33,7 +33,7 @@ resource "null_resource" "apply_cert_manager_manifest" {
 
   provisioner "local-exec" {
     command = <<EOT
-      kubectl apply -f - --kubeconfig ${azurerm_kubernetes_cluster.aks_cluster.kube_config_raw} <<EOF
+      kubectl apply -f - --kubeconfig ${azurerm_kubernetes_cluster.kubernetes_cluster.kube_config_raw} <<EOF
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
