@@ -102,7 +102,7 @@ resource "azurerm_kubernetes_flux_configuration" "docs" {
     recreating_enabled         = true
     garbage_collection_enabled = true
     path                       = "./docs-certificate"
-    depends_on = "docs"
+    depends_on                 = ["docs"]
     sync_interval_in_seconds   = 60
   }
   depends_on = [
