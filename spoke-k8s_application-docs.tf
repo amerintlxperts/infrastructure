@@ -95,6 +95,7 @@ resource "azurerm_kubernetes_flux_configuration" "docs" {
     recreating_enabled         = true
     garbage_collection_enabled = true
     path                       = "./docs"
+    depends_on                 = ["docs-certificate"]
     sync_interval_in_seconds   = 60
   }
   kustomizations {
@@ -102,7 +103,6 @@ resource "azurerm_kubernetes_flux_configuration" "docs" {
     recreating_enabled         = true
     garbage_collection_enabled = true
     path                       = "./docs-certificate"
-    depends_on                 = ["docs"]
     sync_interval_in_seconds   = 60
   }
   depends_on = [
