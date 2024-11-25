@@ -25,39 +25,35 @@ resource "azurerm_federated_identity_credential" "cert-manager_federated_identit
   subject             = "system:serviceaccount:cert-manager:cert-manager"
 }
 
-resource "kubernetes_manifest" "cert-manager_clusterissuer" {
+resource "null_resource" "apply_cert_manager_manifest" {
   depends_on = [
+    azurerm_kubernetes_cluster.aks_cluster,
     azurerm_kubernetes_flux_configuration.infrastructure
   ]
-  manifest = {
-    "apiVersion" = "cert-manager.io/v1"
-    "kind"       = "ClusterIssuer"
-    "metadata" = {
-      "name" = "letsencrypt"
-    }
-    "spec" = {
-      "acme" = {
-        "server" = var.LETSENCRYPT_URL
-        "email"  = var.OWNER_EMAIL
-        "privateKeySecretRef" = {
-          "name" = "letsencrypt"
-        }
-        "solvers" = [
-          {
-            "dns01" = {
-              "azureDNS" = {
-                "resourceGroupName" = azurerm_resource_group.azure_resource_group.name
-                "subscriptionID"    = var.ARM_SUBSCRIPTION_ID
-                "hostedZoneName"    = var.DNS_ZONE
-                "environment"       = "AzurePublicCloud"
-                "managedIdentity" = {
-                  "clientID" = data.azurerm_user_assigned_identity.cert_manager_data.client_id
-                }
-              }
-            }
-          }
-        ]
-      }
-    }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      kubectl apply -f - --kubeconfig ${azurerm_kubernetes_cluster.aks_cluster.kube_config_raw} <<EOF
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt
+spec:
+  acme:
+    server: "${var.LETSENCRYPT_URL}"
+    email: "${var.OWNER_EMAIL}"
+    privateKeySecretRef:
+      name: "letsencrypt"
+    solvers:
+    - dns01:
+        azureDNS:
+          resourceGroupName: "${azurerm_resource_group.azure_resource_group.name}"
+          subscriptionID: "${var.ARM_SUBSCRIPTION_ID}"
+          hostedZoneName: "${var.DNS_ZONE}"
+          environment: "AzurePublicCloud"
+          managedIdentity:
+            clientID: "${data.azurerm_user_assigned_identity.cert_manager_data.client_id}"
+EOF
+EOT
   }
 }
