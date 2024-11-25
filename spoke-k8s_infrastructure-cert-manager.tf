@@ -27,7 +27,7 @@ resource "azurerm_federated_identity_credential" "cert-manager_federated_identit
 
 resource "null_resource" "apply_cert_manager_manifest" {
   depends_on = [
-    azurerm_kubernetes_cluster.aks_cluster,
+    azurerm_kubernetes_cluster.kubernetes_cluster,
     azurerm_kubernetes_flux_configuration.infrastructure
   ]
 
