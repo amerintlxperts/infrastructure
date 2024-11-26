@@ -30,10 +30,15 @@ resource "null_resource" "apply_cert_manager_manifest" {
     azurerm_kubernetes_cluster.kubernetes_cluster,
     azurerm_kubernetes_flux_configuration.infrastructure
   ]
+  triggers = {
+    always_run = "${timestamp()}" # Forces the resource to re-run on every `terraform apply`
+  }
 
   provisioner "local-exec" {
     command = <<EOT
-      kubectl apply -f - --kubeconfig ${azurerm_kubernetes_cluster.kubernetes_cluster.kube_config_raw} <<EOF
+      EXISTING_ISSUER=$(kubectl get clusterissuer letsencrypt --kubeconfig ${azurerm_kubernetes_cluster.kubernetes_cluster.kube_config_raw} -o json | jq -r '.metadata.name' || echo "")
+      if [ "$EXISTING_ISSUER" != "letsencrypt" ]; then
+        cat <<EOF | kubectl apply -f - --kubeconfig ${azurerm_kubernetes_cluster.kubernetes_cluster.kube_config_raw}
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
@@ -54,6 +59,9 @@ spec:
           managedIdentity:
             clientID: "${data.azurerm_user_assigned_identity.cert_manager_data.client_id}"
 EOF
+      else
+        echo "ClusterIssuer 'letsencrypt' already exists. Skipping creation."
+      fi
 EOT
   }
 }
