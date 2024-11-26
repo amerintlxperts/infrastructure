@@ -137,22 +137,3 @@ resource "null_resource" "trigger_docs_builder_workflow" {
   }
 }
 
-resource "github_actions_variable" "DOCS_FQDN" {
-  count         = var.APPLICATION_DOCS ? 1 : 0
-  repository    = var.MANIFESTS_APPLICATIONS_REPO_NAME
-  variable_name = "DOCS_FQDN"
-  value         = "${azurerm_dns_cname_record.docs[0].name}.${azurerm_dns_zone.dns_zone.name}"
-}
-
-resource "null_resource" "trigger_manifests-applications_workflow" {
-  count = var.APPLICATION_DOCS ? 1 : 0
-  depends_on = [
-    github_actions_variable.DOCS_FQDN
-  ]
-  triggers = {
-    docs_fqdn = "${azurerm_dns_cname_record.docs[0].name}.${azurerm_dns_zone.dns_zone.name}"
-  }
-  provisioner "local-exec" {
-    command = "gh workflow run update-manifest --repo ${var.GITHUB_ORG}/${var.MANIFESTS_APPLICATIONS_REPO_NAME} --ref main"
-  }
-}
