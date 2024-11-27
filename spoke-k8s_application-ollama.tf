@@ -4,6 +4,15 @@ data "azurerm_public_ip" "hub-nva-vip_ollama_public_ip" {
   resource_group_name = azurerm_resource_group.azure_resource_group.name
 }
 
+resource "azurerm_dns_cname_record" "ollama" {
+  count               = var.APPLICATION_OLLAMA ? 1 : 0
+  name                = "ollama"
+  zone_name           = azurerm_dns_zone.dns_zone.name
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+  ttl                 = 300
+  record              = data.azurerm_public_ip.hub-nva-vip_ollama_public_ip[0].fqdn
+}
+
 resource "azurerm_public_ip" "hub-nva-vip_ollama_public_ip" {
   count               = var.APPLICATION_OLLAMA ? 1 : 0
   name                = "hub-nva-vip_ollama_public_ip"
@@ -63,18 +72,19 @@ resource "azurerm_kubernetes_flux_configuration" "ollama" {
     recreating_enabled         = true
     garbage_collection_enabled = true
     path                       = "./ollama"
+    depends_on                 = ["ollama-certificate"]
+    sync_interval_in_seconds   = 60
+  }
+  kustomizations {
+    name                       = "ollama-certificate"
+    recreating_enabled         = true
+    garbage_collection_enabled = true
+    path                       = "./ollama-certificate"
     sync_interval_in_seconds   = 60
   }
   depends_on = [
     azurerm_kubernetes_flux_configuration.infrastructure
   ]
-}
-
-resource "github_actions_secret" "OLLAMA_FQDN" {
-  count           = var.APPLICATION_OLLAMA ? 1 : 0
-  repository      = var.MANIFESTS_APPLICATIONS_REPO_NAME
-  secret_name     = "OLLAMA_FQDN"
-  plaintext_value = data.azurerm_public_ip.hub-nva-vip_docs_public_ip[0].fqdn
 }
 
 resource "null_resource" "trigger_ollama-version_workflow" {
