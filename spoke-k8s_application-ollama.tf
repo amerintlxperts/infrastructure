@@ -69,3 +69,17 @@ resource "azurerm_kubernetes_flux_configuration" "ollama" {
     azurerm_kubernetes_flux_configuration.infrastructure
   ]
 }
+
+resource "github_actions_secret" "OLLAMA_FQDN" {
+  count           = var.APPLICATION_OLLAMA ? 1 : 0
+  repository      = var.MANIFESTS_APPLICATIONS_REPO_NAME
+  secret_name     = "OLLAMA_FQDN"
+  plaintext_value = data.azurerm_public_ip.hub-nva-vip_docs_public_ip[0].fqdn
+}
+
+resource "null_resource" "trigger_ollama-version_workflow" {
+  count = var.APPLICATION_OLLAMA ? 1 : 0
+  provisioner "local-exec" {
+    command = "gh workflow run ollama-version --repo ${var.GITHUB_ORG}/${var.MANIFESTS_APPLICATIONS_REPO_NAME} --ref main"
+  }
+}
