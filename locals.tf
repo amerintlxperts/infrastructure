@@ -7,17 +7,16 @@ locals {
       size-dev        = "Standard_D4as_v5"
       version         = "latest"
       sku             = "fortinet_fw-vm_payg_v2"
-      management-port = "8443"
+      management-port = "443"
       terms           = true
     },
     "aks" = {
-      version   = "latest"
-      terms     = false
-      offer     = ""
-      sku       = ""
-      publisher = ""
-      size      = "Standard_E4s_v3"
-      #size-dev  = "Standard_B8ms"
+      version      = "latest"
+      terms        = false
+      offer        = ""
+      sku          = ""
+      publisher    = ""
+      size         = "Standard_E4s_v3"
       size-dev     = "Standard_B4ms"
       gpu-size     = "Standard_NC24s_v3"
       gpu-size-dev = "Standard_NC4as_T4_v3"

@@ -138,6 +138,7 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
   custom_data = base64encode(
     templatefile("cloud-init/${var.hub-nva-image}.conf",
       {
+        VAR-config-system-global-admin-sport     = local.vm-image[var.hub-nva-image].management-port
         VAR-hub-external-subnet-gateway          = var.hub-external-subnet-gateway
         VAR-spoke-check-internet-up-ip           = var.spoke-check-internet-up-ip
         VAR-spoke-default-gateway                = cidrhost(var.hub-internal-subnet_prefix, 1)
