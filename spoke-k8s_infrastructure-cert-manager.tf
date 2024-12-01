@@ -40,7 +40,7 @@ resource "kubernetes_namespace" "cert-manager" {
 resource "kubernetes_secret" "cert-manager_fortiweb_login_secret" {
   metadata {
     name      = "fortiweb-login-secret"
-    namespace = kubernetes_namespace.cert-manager[0].metadata[0].name
+    namespace = kubernetes_namespace.cert-manager.metadata[0].name
   }
   data = {
     username = var.HUB_NVA_USERNAME
