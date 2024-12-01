@@ -25,6 +25,30 @@ resource "azurerm_federated_identity_credential" "cert-manager_federated_identit
   subject             = "system:serviceaccount:cert-manager:cert-manager"
 }
 
+resource "kubernetes_namespace" "cert-manager" {
+  depends_on = [
+    azurerm_kubernetes_cluster.kubernetes_cluster
+  ]
+  metadata {
+    name = "cert-manager"
+    labels = {
+      name = "cert-manager"
+    }
+  }
+}
+
+resource "kubernetes_secret" "cert-manager_fortiweb_login_secret" {
+  metadata {
+    name      = "fortiweb-login-secret"
+    namespace = kubernetes_namespace.cert-manager[0].metadata[0].name
+  }
+  data = {
+    username = var.HUB_NVA_USERNAME
+    password = var.HUB_NVA_PASSWORD
+  }
+  type = "Opaque"
+}
+
 resource "null_resource" "apply_cert_manager_manifest" {
   depends_on = [
     azurerm_kubernetes_cluster.kubernetes_cluster,
