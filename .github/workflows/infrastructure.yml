@@ -243,7 +243,7 @@ jobs:
       - name: Create Terraform Show Output
         id: tf-show-output
         run: |
-          TERRAFORM_SHOW=$(terraform state show -no-color)
+          TERRAFORM_SHOW=$(terraform show -no-color)
           delimiter="$(openssl rand -hex 8)"
           {
             echo "summary<<${delimiter}"
