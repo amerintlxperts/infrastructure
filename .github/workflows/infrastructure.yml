@@ -242,6 +242,11 @@ jobs:
 
       - name: Create Terraform Show Output
         id: tf-show-output
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
         run: |
           TERRAFORM_SHOW=$(terraform show -no-color)
           delimiter="$(openssl rand -hex 8)"
