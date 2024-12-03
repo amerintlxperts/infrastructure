@@ -91,6 +91,13 @@ resource "azurerm_kubernetes_flux_configuration" "docs" {
     ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
   }
   kustomizations {
+    name                       = "docs-certificate"
+    recreating_enabled         = true
+    garbage_collection_enabled = true
+    path                       = "./docs-certificate"
+    sync_interval_in_seconds   = 60
+  }
+  kustomizations {
     name                       = "docs"
     recreating_enabled         = true
     garbage_collection_enabled = true
@@ -99,10 +106,11 @@ resource "azurerm_kubernetes_flux_configuration" "docs" {
     sync_interval_in_seconds   = 60
   }
   kustomizations {
-    name                       = "docs-certificate"
+    name                       = "docs-post-deployment-config"
     recreating_enabled         = true
     garbage_collection_enabled = true
-    path                       = "./docs-certificate"
+    path                       = "./docs-post-deployment-config"
+    depends_on                 = ["docs"]
     sync_interval_in_seconds   = 60
   }
   depends_on = [
