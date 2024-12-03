@@ -240,6 +240,29 @@ jobs:
           GH_TOKEN: ${{ secrets.PAT }}
         run: terraform apply -auto-approve tfplan
 
+      - name: Create Terraform Show Output
+        id: tf-show-output
+        run: |
+          TERRAFORM_SHOW=$(terraform show -no-color tfplan)
+          delimiter="$(openssl rand -hex 8)"
+          {
+            echo "summary<<${delimiter}"
+            echo "## Terraform Apply Output"
+            echo "<details><summary>Click to expand</summary>"
+            echo ""
+            echo '```terraform'
+            echo "$TERRAFORM_SHOW"
+            echo '```'
+            echo "</details>"
+            echo "${delimiter}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Publish Terraform Apply Output to Task Summary
+        env:
+          SUMMARY: ${{ steps.tf-show-output.outputs.summary }}
+        run: |
+          echo "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"
+
   destroy:
     name: Terraform Destroy
     needs: [terraform]
