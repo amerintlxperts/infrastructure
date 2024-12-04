@@ -89,7 +89,7 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   sku_tier                          = var.PRODUCTION_ENVIRONMENT ? "Standard" : "Free"
   cost_analysis_enabled             = var.PRODUCTION_ENVIRONMENT ? true : false
   support_plan                      = "KubernetesOfficial"
-  kubernetes_version                = "1.30"
+  kubernetes_version                = "1.30.6"
   node_resource_group               = local.node_resource_group
   role_based_access_control_enabled = true
   oidc_issuer_enabled               = true
@@ -110,10 +110,11 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
     vm_size                     = var.PRODUCTION_ENVIRONMENT == "Production" ? local.vm-image["aks"].size : local.vm-image["aks"].size-dev
     os_sku                      = "AzureLinux"
     max_pods                    = "75"
-    orchestrator_version        = "1.30"
+    orchestrator_version        = "1.30.6"
     vnet_subnet_id              = azurerm_subnet.spoke_subnet.id
+    enable_auto_scaling         = var.PRODUCTION_ENVIRONMENT == "Production" ? true : false
     upgrade_settings {
-      max_surge = "10%"
+      max_surge = 0
     }
   }
   network_profile {
