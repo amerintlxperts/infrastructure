@@ -107,12 +107,13 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
     temporary_name_for_rotation = "rotation"
     name                        = "system"
     node_count                  = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : 1
+    min_count                   = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : 1
+    max_count                   = var.PRODUCTION_ENVIRONMENT == "Production" ? 5 : 1
     vm_size                     = var.PRODUCTION_ENVIRONMENT == "Production" ? local.vm-image["aks"].size : local.vm-image["aks"].size-dev
     os_sku                      = "AzureLinux"
     max_pods                    = "75"
     orchestrator_version        = "1.30.6"
     vnet_subnet_id              = azurerm_subnet.spoke_subnet.id
-    enable_auto_scaling         = var.PRODUCTION_ENVIRONMENT == "Production" ? true : false
     upgrade_settings {
       max_surge = 0
     }
