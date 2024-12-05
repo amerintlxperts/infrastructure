@@ -68,6 +68,13 @@ resource "azurerm_kubernetes_flux_configuration" "ollama" {
     ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
   }
   kustomizations {
+    name                       = "ollama-certificate"
+    recreating_enabled         = true
+    garbage_collection_enabled = true
+    path                       = "./ollama-certificate"
+    sync_interval_in_seconds   = 60
+  }
+  kustomizations {
     name                       = "ollama"
     recreating_enabled         = true
     garbage_collection_enabled = true
@@ -76,10 +83,11 @@ resource "azurerm_kubernetes_flux_configuration" "ollama" {
     sync_interval_in_seconds   = 60
   }
   kustomizations {
-    name                       = "ollama-certificate"
+    name                       = "ollama-post-deployment-config"
     recreating_enabled         = true
     garbage_collection_enabled = true
-    path                       = "./ollama-certificate"
+    path                       = "./ollama-post-deployment-config"
+    depends_on                 = ["ollama"]
     sync_interval_in_seconds   = 60
   }
   depends_on = [
