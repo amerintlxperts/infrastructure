@@ -116,7 +116,7 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
     orchestrator_version        = "1.30.6"
     vnet_subnet_id              = azurerm_subnet.spoke_subnet.id
     upgrade_settings {
-      max_surge = 0
+      max_surge = var.PRODUCTION_ENVIRONMENT == "Production" ? 10 : 1 
     }
   }
   network_profile {
