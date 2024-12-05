@@ -107,8 +107,9 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
     temporary_name_for_rotation = "rotation"
     name                        = "system"
     node_count                  = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : 1
-    min_count                   = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : 1
-    max_count                   = var.PRODUCTION_ENVIRONMENT == "Production" ? 5 : 1
+    auto_scaling_enabled        = var.PRODUCTION_ENVIRONMENT
+    min_count                   = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : null
+    max_count                   = var.PRODUCTION_ENVIRONMENT == "Production" ? 5 : null
     vm_size                     = var.PRODUCTION_ENVIRONMENT == "Production" ? local.vm-image["aks"].size : local.vm-image["aks"].size-dev
     os_sku                      = "AzureLinux"
     max_pods                    = "75"
@@ -172,7 +173,9 @@ resource "azurerm_kubernetes_cluster_node_pool" "node-pool" {
   vm_size               = var.PRODUCTION_ENVIRONMENT ? local.vm-image["aks"].gpu-size : local.vm-image["aks"].gpu-size-dev
   os_sku                = "AzureLinux"
   auto_scaling_enabled  = var.PRODUCTION_ENVIRONMENT
-  node_count            = 1
+  min_count             = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : null
+  max_count             = var.PRODUCTION_ENVIRONMENT == "Production" ? 5 : null
+  node_count            = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : 1
   node_taints           = ["nvidia.com/gpu=true:NoSchedule"]
   node_labels = {
     "nvidia.com/gpu.present" = "true"
