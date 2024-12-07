@@ -82,14 +82,14 @@ resource "azurerm_kubernetes_flux_configuration" "ollama" {
     depends_on                 = ["ollama-certificate"]
     sync_interval_in_seconds   = 60
   }
-  kustomizations {
-    name                       = "ollama-post-deployment-config"
-    recreating_enabled         = true
-    garbage_collection_enabled = true
-    path                       = "./ollama-post-deployment-config"
-    depends_on                 = ["ollama"]
-    sync_interval_in_seconds   = 60
-  }
+  #kustomizations {
+  #  name                       = "ollama-post-deployment-config"
+  #  recreating_enabled         = true
+  #  garbage_collection_enabled = true
+  #  path                       = "./ollama-post-deployment-config"
+  #  depends_on                 = ["ollama"]
+  #  sync_interval_in_seconds   = 60
+  #}
   depends_on = [
     azurerm_kubernetes_flux_configuration.infrastructure
   ]
