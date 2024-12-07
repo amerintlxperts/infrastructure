@@ -14,7 +14,7 @@ resource "kubernetes_secret" "webhook_fortiweb_login_secret" {
   count = var.APPLICATION_DOCS ? 1 : 0
   metadata {
     name      = "fortiweb-login-secret"
-    namespace = kubernetes_namespace.webhook[0].metadata[0].name
+    namespace = kubernetes_namespace.webhook.metadata[0].name
   }
   data = {
     username = var.HUB_NVA_USERNAME
