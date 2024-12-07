@@ -1,20 +1,20 @@
-resource "kubernetes_namespace" "webhook" {
+resource "kubernetes_namespace" "ingress-helper" {
   depends_on = [
     azurerm_kubernetes_cluster.kubernetes_cluster
   ]
   metadata {
-    name = "webhook"
+    name = "ingress-helper"
     labels = {
-      name = "webhook"
+      name = "ingress-helper"
     }
   }
 }
 
-resource "kubernetes_secret" "webhook_fortiweb_login_secret" {
+resource "kubernetes_secret" "ingress-helper_fortiweb_login_secret" {
   count = var.APPLICATION_DOCS ? 1 : 0
   metadata {
     name      = "fortiweb-login-secret"
-    namespace = kubernetes_namespace.webhook.metadata[0].name
+    namespace = kubernetes_namespace.ingress-helper.metadata[0].name
   }
   data = {
     username = var.HUB_NVA_USERNAME
