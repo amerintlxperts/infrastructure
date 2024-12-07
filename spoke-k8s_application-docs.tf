@@ -105,14 +105,14 @@ resource "azurerm_kubernetes_flux_configuration" "docs" {
     depends_on                 = ["docs-certificate"]
     sync_interval_in_seconds   = 60
   }
-  kustomizations {
-    name                       = "docs-post-deployment-config"
-    recreating_enabled         = true
-    garbage_collection_enabled = true
-    path                       = "./docs-post-deployment-config"
-    depends_on                 = ["docs"]
-    sync_interval_in_seconds   = 60
-  }
+  #kustomizations {
+  #  name                       = "docs-post-deployment-config"
+  #  recreating_enabled         = true
+  #  garbage_collection_enabled = true
+  #  path                       = "./docs-post-deployment-config"
+  #  depends_on                 = ["docs"]
+  #  sync_interval_in_seconds   = 60
+  #}
   depends_on = [
     azurerm_kubernetes_flux_configuration.infrastructure
   ]
