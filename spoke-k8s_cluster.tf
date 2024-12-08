@@ -108,11 +108,8 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
     name                        = "system"
     auto_scaling_enabled        = var.PRODUCTION_ENVIRONMENT
     node_count                  = var.PRODUCTION_ENVIRONMENT ? 3 : 1
-    #node_count                  = "3"
     min_count                   = var.PRODUCTION_ENVIRONMENT ? 3 : null
-    #min_count                   = "3"
     max_count                   = var.PRODUCTION_ENVIRONMENT ? 7 : null
-    #max_count                   = "7"
     vm_size                     = var.PRODUCTION_ENVIRONMENT ? local.vm-image["aks"].size : local.vm-image["aks"].size-dev
     os_sku                      = "AzureLinux"
     max_pods                    = "75"
@@ -183,7 +180,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "node-pool" {
   node_labels = {
     "nvidia.com/gpu.present" = "true"
   }
-  os_disk_type      = "Ephemeral"
+  os_disk_type      = var.PRODUCTION_ENVIRONMENT ? "Managed" : "Ephemeral"
   ultra_ssd_enabled = true
   os_disk_size_gb   = var.PRODUCTION_ENVIRONMENT ? "256" : "175"
   max_pods          = "50"
