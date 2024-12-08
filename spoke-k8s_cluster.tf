@@ -106,12 +106,13 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   default_node_pool {
     temporary_name_for_rotation = "rotation"
     name                        = "system"
-    node_count                  = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : 1
     auto_scaling_enabled        = var.PRODUCTION_ENVIRONMENT
+    #node_count                  = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : 1
+    node_count                  = "3"
     #min_count                   = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : null
-    min_count = "3"
+    min_count                   = "3"
     #max_count                   = var.PRODUCTION_ENVIRONMENT == "Production" ? 5 : null
-    max_count                   = "5"
+    max_count                   = "7"
     vm_size                     = var.PRODUCTION_ENVIRONMENT == "Production" ? local.vm-image["aks"].size : local.vm-image["aks"].size-dev
     os_sku                      = "AzureLinux"
     max_pods                    = "75"
