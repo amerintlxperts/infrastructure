@@ -107,19 +107,19 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
     temporary_name_for_rotation = "rotation"
     name                        = "system"
     auto_scaling_enabled        = var.PRODUCTION_ENVIRONMENT
-    #node_count                  = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : 1
-    node_count                  = "3"
-    #min_count                   = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : null
-    min_count                   = "3"
-    #max_count                   = var.PRODUCTION_ENVIRONMENT == "Production" ? 5 : null
-    max_count                   = "7"
-    vm_size                     = var.PRODUCTION_ENVIRONMENT == "Production" ? local.vm-image["aks"].size : local.vm-image["aks"].size-dev
+    node_count                  = var.PRODUCTION_ENVIRONMENT ? 3 : 1
+    #node_count                  = "3"
+    min_count                   = var.PRODUCTION_ENVIRONMENT ? 3 : null
+    #min_count                   = "3"
+    max_count                   = var.PRODUCTION_ENVIRONMENT ? 7 : null
+    #max_count                   = "7"
+    vm_size                     = var.PRODUCTION_ENVIRONMENT ? local.vm-image["aks"].size : local.vm-image["aks"].size-dev
     os_sku                      = "AzureLinux"
     max_pods                    = "75"
     orchestrator_version        = "1.30.6"
     vnet_subnet_id              = azurerm_subnet.spoke_subnet.id
     upgrade_settings {
-      max_surge = var.PRODUCTION_ENVIRONMENT == "Production" ? 10 : 1 
+      max_surge = var.PRODUCTION_ENVIRONMENT ? 10 : 1 
     }
   }
   network_profile {
@@ -176,16 +176,16 @@ resource "azurerm_kubernetes_cluster_node_pool" "node-pool" {
   vm_size               = var.PRODUCTION_ENVIRONMENT ? local.vm-image["aks"].gpu-size : local.vm-image["aks"].gpu-size-dev
   os_sku                = "AzureLinux"
   auto_scaling_enabled  = var.PRODUCTION_ENVIRONMENT
-  min_count             = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : null
-  max_count             = var.PRODUCTION_ENVIRONMENT == "Production" ? 5 : null
-  node_count            = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : 1
+  min_count             = var.PRODUCTION_ENVIRONMENT ? 3 : null
+  max_count             = var.PRODUCTION_ENVIRONMENT ? 5 : null
+  node_count            = var.PRODUCTION_ENVIRONMENT ? 3 : 1
   node_taints           = ["nvidia.com/gpu=true:NoSchedule"]
   node_labels = {
     "nvidia.com/gpu.present" = "true"
   }
   os_disk_type      = "Ephemeral"
   ultra_ssd_enabled = true
-  os_disk_size_gb   = var.PRODUCTION_ENVIRONMENT == "Production" ? "256" : "175"
+  os_disk_size_gb   = var.PRODUCTION_ENVIRONMENT ? "256" : "175"
   max_pods          = "50"
   zones             = ["1"]
   vnet_subnet_id    = azurerm_subnet.spoke_subnet.id
