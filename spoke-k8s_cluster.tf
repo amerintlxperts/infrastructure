@@ -108,7 +108,8 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
     name                        = "system"
     node_count                  = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : 1
     auto_scaling_enabled        = var.PRODUCTION_ENVIRONMENT
-    min_count                   = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : null
+    #min_count                   = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : null
+    min_count = "3"
     #max_count                   = var.PRODUCTION_ENVIRONMENT == "Production" ? 5 : null
     max_count                   = "5"
     vm_size                     = var.PRODUCTION_ENVIRONMENT == "Production" ? local.vm-image["aks"].size : local.vm-image["aks"].size-dev
