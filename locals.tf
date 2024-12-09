@@ -18,9 +18,8 @@ locals {
       publisher    = ""
       size         = "Standard_E4s_v3"
       size-dev     = "Standard_B4ms"
-      gpu-size     = "Standard_NC6s_v3"
       #gpu-size     = "Standard_NC24ads_A100_v4"
-      #gpu-size     = "Standard_NC4as_T4_v3"
+      gpu-size     = "Standard_NC4as_T4_v3"
       gpu-size-dev = "Standard_NC4as_T4_v3"
     }
   }
