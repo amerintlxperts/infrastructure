@@ -181,7 +181,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "node-pool" {
     "nvidia.com/gpu.present" = "true"
   }
   os_disk_type      = var.PRODUCTION_ENVIRONMENT ? "Managed" : "Ephemeral"
-  ultra_ssd_enabled = true
+  ultra_ssd_enabled = var.PRODUCTION_ENVIRONMENT ? null : true
   os_disk_size_gb   = var.PRODUCTION_ENVIRONMENT ? "256" : "175"
   max_pods          = "50"
   zones             = ["1"]
