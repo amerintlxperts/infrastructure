@@ -61,14 +61,16 @@ resource "kubernetes_secret" "clusterissuer" {
     subscriptionID    = var.ARM_SUBSCRIPTION_ID
     hostedZoneName    = var.DNS_ZONE
     clientID          = data.azurerm_user_assigned_identity.cert_manager_data.client_id
+    checksum          = md5(
+      jsonencode({
+        server            = var.LETSENCRYPT_URL
+        email             = var.OWNER_EMAIL
+        resourceGroupName = azurerm_resource_group.azure_resource_group.name
+        subscriptionID    = var.ARM_SUBSCRIPTION_ID
+        hostedZoneName    = var.DNS_ZONE
+        clientID          = data.azurerm_user_assigned_identity.cert_manager_data.client_id
+      })
+    )
   }
   type = "Opaque"
-  triggers = {
-    server            = var.LETSENCRYPT_URL
-    email             = var.OWNER_EMAIL
-    resourceGroupName = azurerm_resource_group.azure_resource_group.name
-    subscriptionID    = var.ARM_SUBSCRIPTION_ID
-    hostedZoneName    = var.DNS_ZONE
-    clientID          = data.azurerm_user_assigned_identity.cert_manager_data.client_id
-  }
 }
