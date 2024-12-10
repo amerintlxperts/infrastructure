@@ -8,9 +8,9 @@ resource "azurerm_public_ip" "hub-nva-management_public_ip" {
   domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-management"
 }
 
-resource "azurerm_dns_cname_record" "management" {
+resource "azurerm_dns_cname_record" "hub-nva" {
   count               = var.MANAGEMENT_PUBLIC_IP ? 1 : 0
-  name                = "management"
+  name                = "hub-nva"
   zone_name           = azurerm_dns_zone.dns_zone.name
   resource_group_name = azurerm_resource_group.azure_resource_group.name
   ttl                 = 300
