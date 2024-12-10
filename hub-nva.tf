@@ -8,6 +8,21 @@ resource "azurerm_public_ip" "hub-nva-management_public_ip" {
   domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-management"
 }
 
+data "azurerm_public_ip" "hub-nva-management_public_ip" {
+  count               = var.MANAGEMENT_PUBLIC_IP ? 1 : 0
+  name                = azurerm_public_ip.hub-nva-managed_public_ip[0].name
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+}
+
+resource "azurerm_dns_cname_record" "docs" {
+  count               = var.MANAGEMENT_PUBLIC_IP ? 1 : 0
+  name                = "management"
+  zone_name           = azurerm_dns_zone.dns_zone.name
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+  ttl                 = 300
+  record              = data.azurerm_public_ip.hub-nva-management_public_ip[0].fqdn
+}
+
 resource "azurerm_availability_set" "hub-nva_availability_set" {
   location                     = azurerm_resource_group.azure_resource_group.location
   resource_group_name          = azurerm_resource_group.azure_resource_group.name
