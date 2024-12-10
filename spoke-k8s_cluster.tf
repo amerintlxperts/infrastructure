@@ -118,6 +118,7 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
     upgrade_settings {
       max_surge = var.PRODUCTION_ENVIRONMENT ? 10 : 1 
     }
+    only_critical_addons_enabled = var.PRODUCTION_ENVIRONMENT ? true : false
   }
   network_profile {
     #network_plugin    = "azure"
@@ -133,6 +134,7 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   identity {
     type = "SystemAssigned"
   }
+
 }
 
 resource "null_resource" "tag_node_resource_group" {
@@ -166,7 +168,25 @@ resource "null_resource" "tag_node_resource_group" {
   }
 }
 
-resource "azurerm_kubernetes_cluster_node_pool" "node-pool" {
+resource "azurerm_kubernetes_cluster_node_pool" "cpu-node-pool" {
+  count                 = var.PRODUCTION_ENVIRONMENT ? 1 : 0
+  name                  = "cpu"
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.kubernetes_cluster.id
+  vm_size               = var.PRODUCTION_ENVIRONMENT ? local.vm-image["aks"].cpu-size : local.vm-image["aks"].cpu-size-dev
+  os_sku                = "AzureLinux"
+  auto_scaling_enabled  = var.PRODUCTION_ENVIRONMENT
+  min_count             = var.PRODUCTION_ENVIRONMENT ? 3 : null
+  max_count             = var.PRODUCTION_ENVIRONMENT ? 5 : null
+  node_count            = var.PRODUCTION_ENVIRONMENT ? 3 : 1
+  os_disk_type      = var.PRODUCTION_ENVIRONMENT ? "Managed" : "Ephemeral"
+  ultra_ssd_enabled = var.PRODUCTION_ENVIRONMENT ? null : true
+  os_disk_size_gb   = var.PRODUCTION_ENVIRONMENT ? "256" : "175"
+  max_pods          = "50"
+  zones             = ["1"]
+  vnet_subnet_id    = azurerm_subnet.spoke_subnet.id
+}
+
+resource "azurerm_kubernetes_cluster_node_pool" "gpu-node-pool" {
   count                 = var.GPU_NODE_POOL ? 1 : 0
   name                  = "gpu"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.kubernetes_cluster.id
