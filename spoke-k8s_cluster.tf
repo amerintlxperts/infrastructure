@@ -119,6 +119,10 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
       max_surge = var.PRODUCTION_ENVIRONMENT ? 10 : 1 
     }
     only_critical_addons_enabled = var.PRODUCTION_ENVIRONMENT ? true : false
+    labels = {
+      "system-pool" = "true",
+      "user-pool" = "false"
+    }
   }
   network_profile {
     #network_plugin    = "azure"
