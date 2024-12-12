@@ -121,6 +121,7 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
     only_critical_addons_enabled = var.PRODUCTION_ENVIRONMENT ? true : false
     node_labels = {
       "system-pool" = "true"
+      "user-pool" = var.PRODUCTION_ENVIRONMENT ? false : true 
     }
   }
   network_profile {
