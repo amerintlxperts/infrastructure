@@ -166,9 +166,11 @@ resource "null_resource" "tag_node_resource_group" {
   provisioner "local-exec" {
     command = <<EOT
       az login --service-principal \
-        --username "$(echo '${var.AZURE_CREDENTIALS}' | jq -r '.clientId')" \
-        --password "$(echo '${var.AZURE_CREDENTIALS}' | jq -r '.clientSecret')" \
-        --tenant "$(echo '${var.AZURE_CREDENTIALS}' | jq -r '.tenantId')"
+        --username "${var.ARM_CLIENT_ID}" \
+        --password "${var.ARM_CLIENT_SECRET}" \
+        --tenant "${var.ARM_TENANT_ID}" >/dev/null 2>&1
+
+      az account set --subscription "${var.ARM_SUBSCRIPTION_ID}"
       az group update \
         --name ${azurerm_kubernetes_cluster.kubernetes_cluster.node_resource_group} \
         --set tags."Username"="${var.OWNER_EMAIL}" tags."Name"="${var.NAME}"
