@@ -54,7 +54,7 @@ resource "kubernetes_secret" "htpasswd_secret" {
     namespace = kubernetes_namespace.docs[0].metadata[0].name
   }
   data = {
-    htpasswd = "${var.HTUSERNAME}:${htpasswd_password.hash.apr1}"
+    htpasswd = "${var.HTUSERNAME}:${trimspace(htpasswd_password.hash.apr1)}"
   }
   type = "Opaque"
 }
