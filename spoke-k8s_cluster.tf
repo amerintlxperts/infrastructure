@@ -141,42 +141,6 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
 
 }
 
-<<<<<<< HEAD
-resource "null_resource" "tag_node_resource_group" {
-  depends_on = [azurerm_kubernetes_cluster.kubernetes_cluster]
-  triggers = {
-    cluster_id         = azurerm_kubernetes_cluster.kubernetes_cluster.id
-    cluster_name       = azurerm_kubernetes_cluster.kubernetes_cluster.name
-    kubernetes_version = azurerm_kubernetes_cluster.kubernetes_cluster.kubernetes_version
-    node_pool_config = join(",", [
-      azurerm_kubernetes_cluster.kubernetes_cluster.default_node_pool[0].name,
-      tostring(azurerm_kubernetes_cluster.kubernetes_cluster.default_node_pool[0].node_count),
-      azurerm_kubernetes_cluster.kubernetes_cluster.default_node_pool[0].vm_size,
-      tostring(azurerm_kubernetes_cluster.kubernetes_cluster.default_node_pool[0].max_pods)
-    ])
-    location              = azurerm_kubernetes_cluster.kubernetes_cluster.location
-    resource_group_name   = azurerm_kubernetes_cluster.kubernetes_cluster.resource_group_name
-    network_profile       = jsonencode(azurerm_kubernetes_cluster.kubernetes_cluster.network_profile)
-    identity              = jsonencode(azurerm_kubernetes_cluster.kubernetes_cluster.identity)
-    oidc_issuer_enabled   = tostring(azurerm_kubernetes_cluster.kubernetes_cluster.oidc_issuer_enabled)
-    sku_tier              = azurerm_kubernetes_cluster.kubernetes_cluster.sku_tier
-    cost_analysis_enabled = tostring(azurerm_kubernetes_cluster.kubernetes_cluster.cost_analysis_enabled)
-    support_plan          = azurerm_kubernetes_cluster.kubernetes_cluster.support_plan
-    node_resource_group   = azurerm_kubernetes_cluster.kubernetes_cluster.node_resource_group
-  }
-  provisioner "local-exec" {
-    command = <<EOT
-      az login --service-principal \
-        --username "${var.ARM_CLIENT_ID}" \
-        --password "${var.ARM_CLIENT_SECRET}" \
-        --tenant "${var.ARM_TENANT_ID}"
-      az group update \
-        --name ${azurerm_kubernetes_cluster.kubernetes_cluster.node_resource_group} \
-        --set tags."Username"="${var.OWNER_EMAIL}" tags."Name"="${var.NAME}"
-    EOT
-  }
-}
-=======
 #resource "null_resource" "tag_node_resource_group" {
 #  depends_on = [azurerm_kubernetes_cluster.kubernetes_cluster]
 #  triggers = {
@@ -213,7 +177,7 @@ resource "null_resource" "tag_node_resource_group" {
 #    EOT
 #  }
 #}
->>>>>>> 8805cfe60f5f07df02a51c2651cd5207cb568389
+
 
 resource "azurerm_kubernetes_cluster_node_pool" "cpu-node-pool" {
   count                 = var.PRODUCTION_ENVIRONMENT ? 1 : 0
