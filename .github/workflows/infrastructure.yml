@@ -337,18 +337,3 @@ jobs:
           TF_IN_AUTOMATION: true
         run: |
           terraform destroy -auto-approve
-
-      - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0
-        with:
-          token: ${{ secrets.PAT }}
-          repository: ${{ github.repository_owner }}/${{ secrets.APPLICATIONS_MANIFESTS_REPO_NAME }}
-          event-type: update-manifest
-          client-payload: |-
-            {
-              "type": "applications",
-              "name": "docs",
-              "file": "Deployment.yaml",
-              "spec": ".spec.template.spec.containers[0].image",
-              "value": "nginxinc/nginx-unprivileged:latest"
-            }
