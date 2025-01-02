@@ -38,8 +38,8 @@ resource "kubernetes_namespace" "docs" {
 
 resource "random_password" "salt" {
   length           = 8
-  special          = true
-  override_special = "!@#%&*()-_=+[]{}<>:?"
+  special          = false
+  #override_special = "!@#%&*()-_=+[]{}<>:?"
 }
 
 resource "htpasswd_password" "hash" {
@@ -91,12 +91,28 @@ resource "azurerm_kubernetes_flux_configuration" "docs" {
     ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
   }
   kustomizations {
+    name                       = "docs-dependencies"
+    recreating_enabled         = true
+    garbage_collection_enabled = true
+    path                       = "./docs-dependencies"
+    sync_interval_in_seconds   = 60
+  }
+  kustomizations {
     name                       = "docs"
     recreating_enabled         = true
     garbage_collection_enabled = true
     path                       = "./docs"
+    depends_on                 = ["docs-dependencies"]
     sync_interval_in_seconds   = 60
   }
+  #kustomizations {
+  #  name                       = "docs-post-deployment-config"
+  #  recreating_enabled         = true
+  #  garbage_collection_enabled = true
+  #  path                       = "./docs-post-deployment-config"
+  #  depends_on                 = ["docs"]
+  #  sync_interval_in_seconds   = 60
+  #}
   depends_on = [
     azurerm_kubernetes_flux_configuration.infrastructure
   ]
@@ -129,22 +145,3 @@ resource "null_resource" "trigger_docs_builder_workflow" {
   }
 }
 
-resource "github_actions_variable" "DOCS_FQDN" {
-  count         = var.APPLICATION_DOCS ? 1 : 0
-  repository    = var.MANIFESTS_APPLICATIONS_REPO_NAME
-  variable_name = "DOCS_FQDN"
-  value         = "${azurerm_dns_cname_record.docs[0].name}.${azurerm_dns_zone.dns_zone.name}"
-}
-
-resource "null_resource" "trigger_manifests-applications_workflow" {
-  count = var.APPLICATION_DOCS ? 1 : 0
-  depends_on = [
-    github_actions_variable.DOCS_FQDN
-  ]
-  triggers = {
-    docs_fqdn = "${azurerm_dns_cname_record.docs[0].name}.${azurerm_dns_zone.dns_zone.name}"
-  }
-  provisioner "local-exec" {
-    command = "gh workflow run update-manifest --repo ${var.GITHUB_ORG}/${var.MANIFESTS_APPLICATIONS_REPO_NAME} --ref main"
-  }
-}

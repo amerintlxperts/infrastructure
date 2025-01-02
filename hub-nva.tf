@@ -8,6 +8,15 @@ resource "azurerm_public_ip" "hub-nva-management_public_ip" {
   domain_name_label   = "${azurerm_resource_group.azure_resource_group.name}-management"
 }
 
+resource "azurerm_dns_cname_record" "hub-nva" {
+  count               = var.MANAGEMENT_PUBLIC_IP ? 1 : 0
+  name                = "hub-nva"
+  zone_name           = azurerm_dns_zone.dns_zone.name
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+  ttl                 = 300
+  record              = data.azurerm_public_ip.hub-nva-management_public_ip[0].fqdn
+}
+
 resource "azurerm_availability_set" "hub-nva_availability_set" {
   location                     = azurerm_resource_group.azure_resource_group.location
   resource_group_name          = azurerm_resource_group.azure_resource_group.name
@@ -16,6 +25,57 @@ resource "azurerm_availability_set" "hub-nva_availability_set" {
   platform_update_domain_count = 2
 }
 
+locals {
+  ip_configurations = [
+    {
+      name                          = "hub-nva-external-management_ip_configuration"
+      primary                       = true
+      private_ip_address_allocation = "Static"
+      private_ip_address            = var.hub-nva-management-ip
+      subnet_id                     = azurerm_subnet.hub-external_subnet.id
+      public_ip_address_id          = var.MANAGEMENT_PUBLIC_IP ? (length(azurerm_public_ip.hub-nva-management_public_ip) > 0 ? azurerm_public_ip.hub-nva-management_public_ip[0].id : null) : null
+      condition                     = true
+    },
+    {
+      name                          = "hub-nva-external-vip-docs_configuration"
+      primary                       = false
+      private_ip_address_allocation = "Static"
+      private_ip_address            = var.hub-nva-vip-docs
+      subnet_id                     = azurerm_subnet.hub-external_subnet.id
+      public_ip_address_id          = length(azurerm_public_ip.hub-nva-vip_docs_public_ip) > 0 ? azurerm_public_ip.hub-nva-vip_docs_public_ip[0].id : null
+      condition                     = var.APPLICATION_DOCS
+    },
+    {
+      name                          = "hub-nva-external-vip-dvwa_configuration"
+      primary                       = false
+      private_ip_address_allocation = "Static"
+      private_ip_address            = var.hub-nva-vip-dvwa
+      subnet_id                     = azurerm_subnet.hub-external_subnet.id
+      public_ip_address_id          = length(azurerm_public_ip.hub-nva-vip_dvwa_public_ip) > 0 ? azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].id : null
+      condition                     = var.APPLICATION_DVWA
+    },
+    {
+      name                          = "hub-nva-external-vip-ollama_configuration"
+      primary                       = false
+      private_ip_address_allocation = "Static"
+      private_ip_address            = var.hub-nva-vip-ollama
+      subnet_id                     = azurerm_subnet.hub-external_subnet.id
+      public_ip_address_id          = length(azurerm_public_ip.hub-nva-vip_ollama_public_ip) > 0 ? azurerm_public_ip.hub-nva-vip_ollama_public_ip[0].id : null
+      condition                     = var.APPLICATION_OLLAMA
+    },
+    {
+      name                          = "hub-nva-external-vip-video_configuration"
+      primary                       = false
+      private_ip_address_allocation = "Static"
+      private_ip_address            = var.hub-nva-vip-video
+      subnet_id                     = azurerm_subnet.hub-external_subnet.id
+      public_ip_address_id          = length(azurerm_public_ip.hub-nva-vip_video_public_ip) > 0 ? azurerm_public_ip.hub-nva-vip_video_public_ip[0].id : null
+      condition                     = var.APPLICATION_VIDEO
+    }
+  ]
+}
+
+# Resource Definition
 resource "azurerm_network_interface" "hub-nva-external_network_interface" {
   name                           = "hub-nva-external_network_interface"
   location                       = azurerm_resource_group.azure_resource_group.location
@@ -23,55 +83,7 @@ resource "azurerm_network_interface" "hub-nva-external_network_interface" {
   accelerated_networking_enabled = true
 
   dynamic "ip_configuration" {
-    for_each = [
-      for ip in [
-        {
-          name                          = "hub-nva-external-management_ip_configuration"
-          primary                       = true
-          private_ip_address_allocation = "Static"
-          private_ip_address            = var.hub-nva-management-ip
-          subnet_id                     = azurerm_subnet.hub-external_subnet.id
-          public_ip_address_id          = var.MANAGEMENT_PUBLIC_IP ? (length(azurerm_public_ip.hub-nva-management_public_ip) > 0 ? azurerm_public_ip.hub-nva-management_public_ip[0].id : null) : null
-          condition                     = true
-        },
-        {
-          name                          = "hub-nva-external-vip-docs_configuration"
-          primary                       = false
-          private_ip_address_allocation = "Static"
-          private_ip_address            = var.hub-nva-vip-docs
-          subnet_id                     = azurerm_subnet.hub-external_subnet.id
-          public_ip_address_id          = length(azurerm_public_ip.hub-nva-vip_docs_public_ip) > 0 ? azurerm_public_ip.hub-nva-vip_docs_public_ip[0].id : null
-          condition                     = var.APPLICATION_DOCS
-        },
-        {
-          name                          = "hub-nva-external-vip-dvwa_configuration"
-          primary                       = false
-          private_ip_address_allocation = "Static"
-          private_ip_address            = var.hub-nva-vip-dvwa
-          subnet_id                     = azurerm_subnet.hub-external_subnet.id
-          public_ip_address_id          = length(azurerm_public_ip.hub-nva-vip_dvwa_public_ip) > 0 ? azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].id : null
-          condition                     = var.APPLICATION_DVWA
-        },
-        {
-          name                          = "hub-nva-external-vip-ollama_configuration"
-          primary                       = false
-          private_ip_address_allocation = "Static"
-          private_ip_address            = var.hub-nva-vip-ollama
-          subnet_id                     = azurerm_subnet.hub-external_subnet.id
-          public_ip_address_id          = length(azurerm_public_ip.hub-nva-vip_ollama_public_ip) > 0 ? azurerm_public_ip.hub-nva-vip_ollama_public_ip[0].id : null
-          condition                     = var.APPLICATION_OLLAMA
-        },
-        {
-          name                          = "hub-nva-external-vip-video_configuration"
-          primary                       = false
-          private_ip_address_allocation = "Static"
-          private_ip_address            = var.hub-nva-vip-video
-          subnet_id                     = azurerm_subnet.hub-external_subnet.id
-          public_ip_address_id          = length(azurerm_public_ip.hub-nva-vip_video_public_ip) > 0 ? azurerm_public_ip.hub-nva-vip_video_public_ip[0].id : null
-          condition                     = var.APPLICATION_VIDEO
-        }
-      ] : ip if ip.condition
-    ]
+    for_each = [for ip in local.ip_configurations : ip if ip.condition]
 
     content {
       name                          = ip_configuration.value.name
@@ -138,6 +150,7 @@ resource "azurerm_linux_virtual_machine" "hub-nva_virtual_machine" {
   custom_data = base64encode(
     templatefile("cloud-init/${var.hub-nva-image}.conf",
       {
+        VAR-config-system-global-admin-sport     = local.vm-image[var.hub-nva-image].management-port
         VAR-hub-external-subnet-gateway          = var.hub-external-subnet-gateway
         VAR-spoke-check-internet-up-ip           = var.spoke-check-internet-up-ip
         VAR-spoke-default-gateway                = cidrhost(var.hub-internal-subnet_prefix, 1)

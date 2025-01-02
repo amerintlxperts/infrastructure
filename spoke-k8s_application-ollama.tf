@@ -4,6 +4,15 @@ data "azurerm_public_ip" "hub-nva-vip_ollama_public_ip" {
   resource_group_name = azurerm_resource_group.azure_resource_group.name
 }
 
+resource "azurerm_dns_cname_record" "ollama" {
+  count               = var.APPLICATION_OLLAMA ? 1 : 0
+  name                = "ollama"
+  zone_name           = azurerm_dns_zone.dns_zone.name
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+  ttl                 = 300
+  record              = data.azurerm_public_ip.hub-nva-vip_ollama_public_ip[0].fqdn
+}
+
 resource "azurerm_public_ip" "hub-nva-vip_ollama_public_ip" {
   count               = var.APPLICATION_OLLAMA ? 1 : 0
   name                = "hub-nva-vip_ollama_public_ip"
@@ -59,13 +68,36 @@ resource "azurerm_kubernetes_flux_configuration" "ollama" {
     ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
   }
   kustomizations {
+    name                       = "ollama-dependencies"
+    recreating_enabled         = true
+    garbage_collection_enabled = true
+    path                       = "./ollama-dependencies"
+    sync_interval_in_seconds   = 60
+  }
+  kustomizations {
     name                       = "ollama"
     recreating_enabled         = true
     garbage_collection_enabled = true
     path                       = "./ollama"
+    depends_on                 = ["ollama-dependencies"]
     sync_interval_in_seconds   = 60
   }
+  #kustomizations {
+  #  name                       = "ollama-post-deployment-config"
+  #  recreating_enabled         = true
+  #  garbage_collection_enabled = true
+  #  path                       = "./ollama-post-deployment-config"
+  #  depends_on                 = ["ollama"]
+  #  sync_interval_in_seconds   = 60
+  #}
   depends_on = [
     azurerm_kubernetes_flux_configuration.infrastructure
   ]
+}
+
+resource "null_resource" "trigger_ollama-version_workflow" {
+  count = var.APPLICATION_OLLAMA ? 1 : 0
+  provisioner "local-exec" {
+    command = "gh workflow run ollama-version --repo ${var.GITHUB_ORG}/${var.MANIFESTS_APPLICATIONS_REPO_NAME} --ref main"
+  }
 }

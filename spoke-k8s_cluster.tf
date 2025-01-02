@@ -89,7 +89,7 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   sku_tier                          = var.PRODUCTION_ENVIRONMENT ? "Standard" : "Free"
   cost_analysis_enabled             = var.PRODUCTION_ENVIRONMENT ? true : false
   support_plan                      = "KubernetesOfficial"
-  kubernetes_version                = "1.30"
+  kubernetes_version                = "1.30.6"
   node_resource_group               = local.node_resource_group
   role_based_access_control_enabled = true
   oidc_issuer_enabled               = true
@@ -106,14 +106,22 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   default_node_pool {
     temporary_name_for_rotation = "rotation"
     name                        = "system"
-    node_count                  = var.PRODUCTION_ENVIRONMENT == "Production" ? 3 : 1
-    vm_size                     = var.PRODUCTION_ENVIRONMENT == "Production" ? local.vm-image["aks"].size : local.vm-image["aks"].size-dev
+    auto_scaling_enabled        = var.PRODUCTION_ENVIRONMENT
+    node_count                  = var.PRODUCTION_ENVIRONMENT ? 3 : 1
+    min_count                   = var.PRODUCTION_ENVIRONMENT ? 3 : null
+    max_count                   = var.PRODUCTION_ENVIRONMENT ? 7 : null
+    vm_size                     = var.PRODUCTION_ENVIRONMENT ? local.vm-image["aks"].size : local.vm-image["aks"].size-dev
     os_sku                      = "AzureLinux"
     max_pods                    = "75"
-    orchestrator_version        = "1.30"
+    orchestrator_version        = "1.30.6"
     vnet_subnet_id              = azurerm_subnet.spoke_subnet.id
     upgrade_settings {
-      max_surge = "10%"
+      max_surge = var.PRODUCTION_ENVIRONMENT ? 10 : 1 
+    }
+    only_critical_addons_enabled = var.PRODUCTION_ENVIRONMENT ? true : false
+    node_labels = {
+      "system-pool" = "true"
+      "user-pool" = var.PRODUCTION_ENVIRONMENT ? false : true 
     }
   }
   network_profile {
@@ -130,54 +138,82 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   identity {
     type = "SystemAssigned"
   }
+
 }
 
-resource "null_resource" "tag_node_resource_group" {
-  depends_on = [azurerm_kubernetes_cluster.kubernetes_cluster]
-  triggers = {
-    cluster_id         = azurerm_kubernetes_cluster.kubernetes_cluster.id
-    cluster_name       = azurerm_kubernetes_cluster.kubernetes_cluster.name
-    kubernetes_version = azurerm_kubernetes_cluster.kubernetes_cluster.kubernetes_version
-    node_pool_config = join(",", [
-      azurerm_kubernetes_cluster.kubernetes_cluster.default_node_pool[0].name,
-      tostring(azurerm_kubernetes_cluster.kubernetes_cluster.default_node_pool[0].node_count),
-      azurerm_kubernetes_cluster.kubernetes_cluster.default_node_pool[0].vm_size,
-      tostring(azurerm_kubernetes_cluster.kubernetes_cluster.default_node_pool[0].max_pods)
-    ])
-    location              = azurerm_kubernetes_cluster.kubernetes_cluster.location
-    resource_group_name   = azurerm_kubernetes_cluster.kubernetes_cluster.resource_group_name
-    network_profile       = jsonencode(azurerm_kubernetes_cluster.kubernetes_cluster.network_profile)
-    identity              = jsonencode(azurerm_kubernetes_cluster.kubernetes_cluster.identity)
-    oidc_issuer_enabled   = tostring(azurerm_kubernetes_cluster.kubernetes_cluster.oidc_issuer_enabled)
-    sku_tier              = azurerm_kubernetes_cluster.kubernetes_cluster.sku_tier
-    cost_analysis_enabled = tostring(azurerm_kubernetes_cluster.kubernetes_cluster.cost_analysis_enabled)
-    support_plan          = azurerm_kubernetes_cluster.kubernetes_cluster.support_plan
-    node_resource_group   = azurerm_kubernetes_cluster.kubernetes_cluster.node_resource_group
-  }
-  provisioner "local-exec" {
-    command = <<EOT
-      az group update \
-        --name ${azurerm_kubernetes_cluster.kubernetes_cluster.node_resource_group} \
-        --set tags."Username"="${var.OWNER_EMAIL}" tags."Name"="${var.NAME}"
-    EOT
-  }
+#resource "null_resource" "tag_node_resource_group" {
+#  depends_on = [azurerm_kubernetes_cluster.kubernetes_cluster]
+#  triggers = {
+#    cluster_id         = azurerm_kubernetes_cluster.kubernetes_cluster.id
+#    cluster_name       = azurerm_kubernetes_cluster.kubernetes_cluster.name
+#    kubernetes_version = azurerm_kubernetes_cluster.kubernetes_cluster.kubernetes_version
+#    node_pool_config = join(",", [
+#      azurerm_kubernetes_cluster.kubernetes_cluster.default_node_pool[0].name,
+#      tostring(azurerm_kubernetes_cluster.kubernetes_cluster.default_node_pool[0].node_count),
+#      azurerm_kubernetes_cluster.kubernetes_cluster.default_node_pool[0].vm_size,
+#      tostring(azurerm_kubernetes_cluster.kubernetes_cluster.default_node_pool[0].max_pods)
+#    ])
+#    location              = azurerm_kubernetes_cluster.kubernetes_cluster.location
+#    resource_group_name   = azurerm_kubernetes_cluster.kubernetes_cluster.resource_group_name
+#    network_profile       = jsonencode(azurerm_kubernetes_cluster.kubernetes_cluster.network_profile)
+#    identity              = jsonencode(azurerm_kubernetes_cluster.kubernetes_cluster.identity)
+#    oidc_issuer_enabled   = tostring(azurerm_kubernetes_cluster.kubernetes_cluster.oidc_issuer_enabled)
+#    sku_tier              = azurerm_kubernetes_cluster.kubernetes_cluster.sku_tier
+#    cost_analysis_enabled = tostring(azurerm_kubernetes_cluster.kubernetes_cluster.cost_analysis_enabled)
+#    support_plan          = azurerm_kubernetes_cluster.kubernetes_cluster.support_plan
+#    node_resource_group   = azurerm_kubernetes_cluster.kubernetes_cluster.node_resource_group
+#  }
+#  provisioner "local-exec" {
+#    command = <<EOT
+#      az login --service-principal \
+#        --username "${var.ARM_CLIENT_ID}" \
+#        --password "${var.ARM_CLIENT_SECRET}" \
+#        --tenant "${var.ARM_TENANT_ID}" >/dev/null 2>&1
+#
+#      az account set --subscription "${var.ARM_SUBSCRIPTION_ID}"
+#      az group update \
+#        --name ${azurerm_kubernetes_cluster.kubernetes_cluster.node_resource_group} \
+#        --set tags."Username"="${var.OWNER_EMAIL}" tags."Name"="${var.NAME}"
+#    EOT
+#  }
+#}
+
+
+resource "azurerm_kubernetes_cluster_node_pool" "cpu-node-pool" {
+  count                 = var.PRODUCTION_ENVIRONMENT ? 1 : 0
+  name                  = "cpu"
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.kubernetes_cluster.id
+  vm_size               = var.PRODUCTION_ENVIRONMENT ? local.vm-image["aks"].cpu-size : local.vm-image["aks"].cpu-size-dev
+  os_sku                = "AzureLinux"
+  auto_scaling_enabled  = var.PRODUCTION_ENVIRONMENT
+  min_count             = var.PRODUCTION_ENVIRONMENT ? 3 : null
+  max_count             = var.PRODUCTION_ENVIRONMENT ? 5 : null
+  node_count            = var.PRODUCTION_ENVIRONMENT ? 3 : 1
+  os_disk_type      = var.PRODUCTION_ENVIRONMENT ? "Managed" : "Ephemeral"
+  ultra_ssd_enabled = var.PRODUCTION_ENVIRONMENT ? null : true
+  os_disk_size_gb   = var.PRODUCTION_ENVIRONMENT ? "256" : "175"
+  max_pods          = "50"
+  zones             = ["1"]
+  vnet_subnet_id    = azurerm_subnet.spoke_subnet.id
 }
 
-resource "azurerm_kubernetes_cluster_node_pool" "node-pool" {
+resource "azurerm_kubernetes_cluster_node_pool" "gpu-node-pool" {
   count                 = var.GPU_NODE_POOL ? 1 : 0
   name                  = "gpu"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.kubernetes_cluster.id
   vm_size               = var.PRODUCTION_ENVIRONMENT ? local.vm-image["aks"].gpu-size : local.vm-image["aks"].gpu-size-dev
   os_sku                = "AzureLinux"
   auto_scaling_enabled  = var.PRODUCTION_ENVIRONMENT
-  node_count            = 1
+  min_count             = var.PRODUCTION_ENVIRONMENT ? 3 : null
+  max_count             = var.PRODUCTION_ENVIRONMENT ? 5 : null
+  node_count            = var.PRODUCTION_ENVIRONMENT ? 3 : 1
   node_taints           = ["nvidia.com/gpu=true:NoSchedule"]
   node_labels = {
     "nvidia.com/gpu.present" = "true"
   }
-  os_disk_type      = "Ephemeral"
-  ultra_ssd_enabled = true
-  os_disk_size_gb   = var.PRODUCTION_ENVIRONMENT == "Production" ? "256" : "175"
+  os_disk_type      = var.PRODUCTION_ENVIRONMENT ? "Managed" : "Ephemeral"
+  ultra_ssd_enabled = var.PRODUCTION_ENVIRONMENT ? null : true
+  os_disk_size_gb   = var.PRODUCTION_ENVIRONMENT ? "256" : "175"
   max_pods          = "50"
   zones             = ["1"]
   vnet_subnet_id    = azurerm_subnet.spoke_subnet.id

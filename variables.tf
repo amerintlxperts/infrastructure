@@ -8,6 +8,12 @@ variable "APPLICATION_DOCS" {
   default     = "true"
 }
 
+variable "APPLICATION_SIGNUP" {
+  description = "Deploy Signup Application"
+  type        = bool
+  default     = "false"
+}
+
 variable "ARM_SUBSCRIPTION_ID" {
   description = "Azure Subscription ID"
   type        = string

@@ -25,39 +25,52 @@ resource "azurerm_federated_identity_credential" "cert-manager_federated_identit
   subject             = "system:serviceaccount:cert-manager:cert-manager"
 }
 
-resource "kubernetes_manifest" "cert-manager_clusterissuer" {
+resource "kubernetes_namespace" "cert-manager" {
   depends_on = [
-    azurerm_kubernetes_flux_configuration.infrastructure
+    azurerm_kubernetes_cluster.kubernetes_cluster
   ]
-  manifest = {
-    "apiVersion" = "cert-manager.io/v1"
-    "kind"       = "ClusterIssuer"
-    "metadata" = {
-      "name" = "letsencrypt"
-    }
-    "spec" = {
-      "acme" = {
-        "server" = var.LETSENCRYPT_URL
-        "email"  = var.OWNER_EMAIL
-        "privateKeySecretRef" = {
-          "name" = "letsencrypt"
-        }
-        "solvers" = [
-          {
-            "dns01" = {
-              "azureDNS" = {
-                "resourceGroupName" = azurerm_resource_group.azure_resource_group.name
-                "subscriptionID"    = var.ARM_SUBSCRIPTION_ID
-                "hostedZoneName"    = var.DNS_ZONE
-                "environment"       = "AzurePublicCloud"
-                "managedIdentity" = {
-                  "clientID" = data.azurerm_user_assigned_identity.cert_manager_data.client_id
-                }
-              }
-            }
-          }
-        ]
-      }
+  metadata {
+    name = "cert-manager"
+    labels = {
+      name = "cert-manager"
     }
   }
+}
+
+resource "kubernetes_secret" "cert-manager_fortiweb_login_secret" {
+  metadata {
+    name      = "fortiweb-login-secret"
+    namespace = kubernetes_namespace.cert-manager.metadata[0].name
+  }
+  data = {
+    username = var.HUB_NVA_USERNAME
+    password = var.HUB_NVA_PASSWORD
+  }
+  type = "Opaque"
+}
+
+resource "kubernetes_secret" "clusterissuer" {
+  metadata {
+    name      = "clusterissuer"
+    namespace = kubernetes_namespace.cert-manager.metadata[0].name
+  }
+  data = {
+    server            = var.LETSENCRYPT_URL
+    email             = var.OWNER_EMAIL
+    resourceGroupName = azurerm_resource_group.azure_resource_group.name
+    subscriptionID    = var.ARM_SUBSCRIPTION_ID
+    hostedZoneName    = var.DNS_ZONE
+    clientID          = data.azurerm_user_assigned_identity.cert_manager_data.client_id
+    checksum          = md5(
+      jsonencode({
+        server            = var.LETSENCRYPT_URL
+        email             = var.OWNER_EMAIL
+        resourceGroupName = azurerm_resource_group.azure_resource_group.name
+        subscriptionID    = var.ARM_SUBSCRIPTION_ID
+        hostedZoneName    = var.DNS_ZONE
+        clientID          = data.azurerm_user_assigned_identity.cert_manager_data.client_id
+      })
+    )
+  }
+  type = "Opaque"
 }

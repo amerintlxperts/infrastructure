@@ -100,6 +100,7 @@ jobs:
           TF_VAR_PRODUCTION_ENVIRONMENT: ${{ vars.PRODUCTION_ENVIRONMENT }}
           TF_VAR_GPU_NODE_POOL: ${{ vars.GPU_NODE_POOL }}
           TF_VAR_APPLICATION_DOCS: ${{ vars.APPLICATION_DOCS }}
+          TF_VAR_APPLICATION_SIGNUP: ${{ vars.APPLICATION_SIGNUP }}
           TF_VAR_APPLICATION_OLLAMA: ${{ vars.APPLICATION_OLLAMA }}
           TF_VAR_APPLICATION_DVWA: ${{ vars.APPLICATION_DVWA }}
           TF_VAR_APPLICATION_VIDEO: ${{ vars.APPLICATION_VIDEO }}
@@ -226,6 +227,7 @@ jobs:
           TF_VAR_PRODUCTION_ENVIRONMENT: ${{ vars.PRODUCTION_ENVIRONMENT }}
           TF_VAR_GPU_NODE_POOL: ${{ vars.GPU_NODE_POOL }}
           TF_VAR_APPLICATION_DOCS: ${{ vars.APPLICATION_DOCS }}
+          TF_VAR_APPLICATION_SIGNUP: ${{ vars.APPLICATION_SIGNUP }}
           TF_VAR_APPLICATION_OLLAMA: ${{ vars.APPLICATION_OLLAMA }}
           TF_VAR_APPLICATION_DVWA: ${{ vars.APPLICATION_DVWA }}
           TF_VAR_APPLICATION_VIDEO: ${{ vars.APPLICATION_VIDEO }}
@@ -239,6 +241,34 @@ jobs:
           TF_IN_AUTOMATION: true
           GH_TOKEN: ${{ secrets.PAT }}
         run: terraform apply -auto-approve tfplan
+
+      - name: Create Terraform Show Output
+        id: tf-show-output
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+        run: |
+          TERRAFORM_SHOW=$(terraform show -no-color)
+          delimiter="$(openssl rand -hex 8)"
+          {
+            echo "summary<<${delimiter}"
+            echo "## Terraform State Output"
+            echo "<details><summary>Click to expand</summary>"
+            echo ""
+            echo '```terraform'
+            echo "$TERRAFORM_SHOW"
+            echo '```'
+            echo "</details>"
+            echo "${delimiter}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Publish Terraform Apply Output to Task Summary
+        env:
+          SUMMARY: ${{ steps.tf-show-output.outputs.summary }}
+        run: |
+          echo "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"
 
   destroy:
     name: Terraform Destroy
@@ -293,6 +323,7 @@ jobs:
           TF_VAR_PRODUCTION_ENVIRONMENT: ${{ vars.PRODUCTION_ENVIRONMENT }}
           TF_VAR_GPU_NODE_POOL: ${{ vars.GPU_NODE_POOL }}
           TF_VAR_APPLICATION_DOCS: ${{ vars.APPLICATION_DOCS }}
+          TF_VAR_APPLICATION_SIGNUP: ${{ vars.APPLICATION_SIGNUP }}
           TF_VAR_APPLICATION_OLLAMA: ${{ vars.APPLICATION_OLLAMA }}
           TF_VAR_APPLICATION_DVWA: ${{ vars.APPLICATION_DVWA }}
           TF_VAR_APPLICATION_VIDEO: ${{ vars.APPLICATION_VIDEO }}
