@@ -124,6 +124,7 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
       "user-pool" = var.PRODUCTION_ENVIRONMENT ? false : true 
     }
   }
+
   network_profile {
     #network_plugin    = "azure"
     network_plugin = "kubenet"
