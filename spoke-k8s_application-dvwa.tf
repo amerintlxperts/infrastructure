@@ -4,6 +4,78 @@ data "azurerm_public_ip" "hub-nva-vip_dvwa_public_ip" {
   resource_group_name = azurerm_resource_group.azure_resource_group.name
 }
 
+resource "azurerm_dns_cname_record" "dvwa" {
+  count               = var.APPLICATION_DVWA ? 1 : 0
+  name                = "dvwa"
+  zone_name           = azurerm_dns_zone.dns_zone.name
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+  ttl                 = 300
+  record              = data.azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].fqdn
+}
+
+resource "azurerm_dns_cname_record" "app1" {
+  count               = var.APPLICATION_DVWA ? 1 : 0
+  name                = "app1"
+  zone_name           = azurerm_dns_zone.dns_zone.name
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+  ttl                 = 300
+  record              = data.azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].fqdn
+}
+
+resource "azurerm_dns_cname_record" "app2" {
+  count               = var.APPLICATION_DVWA ? 1 : 0
+  name                = "app2"
+  zone_name           = azurerm_dns_zone.dns_zone.name
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+  ttl                 = 300
+  record              = data.azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].fqdn
+}
+
+resource "azurerm_dns_cname_record" "app3" {
+  count               = var.APPLICATION_DVWA ? 1 : 0
+  name                = "app3"
+  zone_name           = azurerm_dns_zone.dns_zone.name
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+  ttl                 = 300
+  record              = data.azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].fqdn
+}
+
+resource "azurerm_dns_cname_record" "app4" {
+  count               = var.APPLICATION_DVWA ? 1 : 0
+  name                = "app4"
+  zone_name           = azurerm_dns_zone.dns_zone.name
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+  ttl                 = 300
+  record              = data.azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].fqdn
+}
+
+resource "azurerm_dns_cname_record" "app5" {
+  count               = var.APPLICATION_DVWA ? 1 : 0
+  name                = "app5"
+  zone_name           = azurerm_dns_zone.dns_zone.name
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+  ttl                 = 300
+  record              = data.azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].fqdn
+}
+
+resource "azurerm_dns_cname_record" "app6" {
+  count               = var.APPLICATION_DVWA ? 1 : 0
+  name                = "app6"
+  zone_name           = azurerm_dns_zone.dns_zone.name
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+  ttl                 = 300
+  record              = data.azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].fqdn
+}
+
+resource "azurerm_dns_cname_record" "app7" {
+  count               = var.APPLICATION_DVWA ? 1 : 0
+  name                = "app7"
+  zone_name           = azurerm_dns_zone.dns_zone.name
+  resource_group_name = azurerm_resource_group.azure_resource_group.name
+  ttl                 = 300
+  record              = data.azurerm_public_ip.hub-nva-vip_dvwa_public_ip[0].fqdn
+}
+
 resource "azurerm_public_ip" "hub-nva-vip_dvwa_public_ip" {
   count               = var.APPLICATION_DVWA ? 1 : 0
   name                = "hub-nva-vip_dvwa_public_ip"
@@ -54,7 +126,7 @@ resource "azurerm_kubernetes_flux_configuration" "dvwa" {
   git_repository {
     url                      = local.dvwa_manifest_repo_fqdn
     reference_type           = "branch"
-    reference_value          = "dvwa-version"
+    reference_value          = "main"
     sync_interval_in_seconds = 60
     ssh_private_key_base64   = base64encode(var.MANIFESTS_APPLICATIONS_SSH_PRIVATE_KEY)
   }
@@ -63,6 +135,13 @@ resource "azurerm_kubernetes_flux_configuration" "dvwa" {
     recreating_enabled         = true
     garbage_collection_enabled = true
     path                       = "./dvwa"
+    sync_interval_in_seconds   = 60
+  }
+  kustomizations {
+    name                       = "dvwa-dependencies"
+    recreating_enabled         = true
+    garbage_collection_enabled = true
+    path                       = "./dvwa-dependencies"
     sync_interval_in_seconds   = 60
   }
   depends_on = [
