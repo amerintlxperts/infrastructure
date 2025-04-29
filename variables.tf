@@ -62,6 +62,18 @@ variable "APPLICATION_OLLAMA" {
   default     = "true"
 }
 
+variable "APPLICATION_ARTIFACTS" {
+  description = "Deploy Artifacts Application"
+  type        = bool
+  default     = "true"
+}
+
+variable "APPLICATION_EXTRACTOR" {
+  description = "Deploy Extractor Application"
+  type        = bool
+  default     = "true"
+}
+
 variable "PRODUCTION_ENVIRONMENT" {
   description = "The environment for deployment Production=(true|false)"
   type        = bool
@@ -351,6 +363,26 @@ variable "hub-nva-vip-video" {
   validation {
     condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-vip-video))
     error_message = "The IP address must be a valid IPv4 format (e.g., 10.0.0.8)."
+  }
+}
+
+variable "hub-nva-vip-artifacts" {
+  default     = "10.0.0.9"
+  description = "Hub NVA Gateway Virtual IP Address for Artifacts"
+  type        = string
+  validation {
+    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-vip-artifacts))
+    error_message = "The IP address must be a valid IPv4 format (e.g., 10.0.0.9)."
+  }
+}
+
+variable "hub-nva-vip-extractor" {
+  default     = "10.0.0.10"
+  description = "Hub NVA Gateway Virtual IP Address for extractor"
+  type        = string
+  validation {
+    condition     = can(regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.hub-nva-vip-extractor))
+    error_message = "The IP address must be a valid IPv4 format (e.g., 10.0.0.10)."
   }
 }
 
