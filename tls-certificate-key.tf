@@ -13,7 +13,7 @@ resource "tls_self_signed_cert" "self_signed_cert" {
     common_name = "localhost.localdomain"
   }
 
-  validity_period_hours = 24
+  validity_period_hours = 3000
   early_renewal_hours   = 1
 
   allowed_uses = [
